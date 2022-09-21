@@ -1,4 +1,4 @@
-# Open WebView
+# Open WebView - [XDA Thread](https://forum.xda-developers.com/t/magisk-module-font-open-webview-1-0-0.4496119/)
 
 ![Open WebView](https://raw.githubusercontent.com/F3FFO/Open-WebView/master/img/logo.png)
 
