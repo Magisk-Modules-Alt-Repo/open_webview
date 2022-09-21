@@ -5,20 +5,6 @@ API=$(grep_prop ro.build.version.sdk)
 OL_PACKAGE_NAME="org.Bromite.WebviewOverlay"
 LIST="/data/system/overlays.xml"
 
-# Dalvik cache
-#if touch /sdcard/.rw && rm /sdcard/.rw; then
-#	EXT_DATA="/sdcard/"
-#elif touch /storage/emulated/0/.rw && rm /storage/emulated/0/.rw; then
-#	EXT_DATA="/storage/emulated/0/"
-#elif touch /data/media/0/.rw && rm /data/media/0/.rw; then
-#	EXT_DATA="/data/media/0/"
-#else
-#	EXT_DATA="/storage/emulated/0/"
-#fi
-#if [ -f "${EXT_DATA}.open_wv" ]; then
-#	rm -rf ${EXT_DATA}.open_wv /data/resource-cache/* /data/dalvik-cache/* /cache/dalvik-cache/* /data/*/com*android.webview* /data/*/*/com*android.webview* /data/system/package_cache/*
-#fi
-
 # force overlay
 if [ -d /system_ext/overlay ]; then
 	OLP=/system/system_ext/overlay

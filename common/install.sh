@@ -118,16 +118,6 @@ if [ $STATUS -eq 1 ]; then
 	rm -rf "$MODPATH"/system/placeholder
 	ui_print "  Dalvik cache will be cleared next boot"
 	ui_print "  Expect longer boot time"
-	# detect ext_data
-	#if touch /sdcard/.rw && rm /sdcard/.rw; then
-	#	touch /sdcard/.open_wv
-	#elif touch /storage/emulated/0/.rw && rm /storage/emulated/0/.rw; then
-	#	touch /storage/emulated/0/.open_wv
-	#elif touch /data/media/0/.rw && rm /data/media/0/.rw; then
-	#	touch /data/media/0/.open_wv
-	#else
-	#	touch /storage/emulated/0/.open_wv
-	#fi
 else
 	ui_print ""
 	ui_print "  Installation failed."
