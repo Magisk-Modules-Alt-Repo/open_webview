@@ -1,9 +1,9 @@
 id=open_webview
 name=Open Webview
-version=1.0.0
-versionCode=100
+version=1.0.1
+versionCode=101
 author=F3FFO
 description=Open Webview change your system webview
 minMagisk=20400
-updateJson=https://raw.githubusercontent.com/F3FFO/Open-Webview/master/update.json
+updateJson=https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/open_webview/master/update.json
 donate=https://www.paypal.me/f3ff0
