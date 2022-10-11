@@ -24,12 +24,14 @@ If you found this helpful, please consider supporting development with a [coffe]
 ## Features
 
 - Works on any device running Android 8.0+ and Magisk 20.4+
-- Install [Bromite WebView v105.0.5195.41](https://github.com/bromite/bromite/releases/tag/105.0.5195.41)
+- Install [Bromite WebView v105.0.5195.147](https://github.com/bromite/bromite/releases/tag/105.0.5195.147)
 
 ## Credits
 
 - [MMT-Extended](https://github.com/Zackptg5/MMT-Extended) by [Zackptg5](https://github.com/Zackptg5)
 - [Bromite](https://github.com/bromite/bromite)
+- [cUrl](https://github.com/curl/curl)
+- [cUrl binary](https://github.com/F3FFO/compile_zlib_openssl_curl_android)
 - [Zipsigner](https://github.com/Magisk-Modules-Repo/zipsigner) by [osm0sis](https://github.com/osm0sis)
 
 ## License
@@ -39,6 +41,11 @@ Copyright 2022 F3FFO
 The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-Alt-Repo/open_fonts/blob/master/LICENSE)
 
 ## Change logs
+
+# v1.1.0
+
+- Add curl binary
+- Bug fix
 
 # v1.0.1
 
