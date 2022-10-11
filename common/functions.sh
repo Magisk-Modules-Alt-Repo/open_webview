@@ -12,14 +12,23 @@ abort() {
 }
 
 device_check() {
-  local opt=`getopt -o dm -- "$@"` type=device
+  local opt=$(getopt -o dm -- "$@") type=device
   eval set -- "$opt"
   while true; do
     case "$1" in
-      -d) local type=device; shift;;
-      -m) local type=manufacturer; shift;;
-      --) shift; break;;
-      *) abort "Invalid device_check argument $1! Aborting!";;
+    -d)
+      local type=device
+      shift
+      ;;
+    -m)
+      local type=manufacturer
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) abort "Invalid device_check argument $1! Aborting!" ;;
     esac
   done
   local prop=$(echo "$1" | tr '[:upper:]' '[:lower:]')
@@ -35,21 +44,30 @@ device_check() {
 }
 
 cp_ch() {
-  local opt=`getopt -o nr -- "$@"` BAK=true UBAK=true FOL=false
+  local opt=$(getopt -o nr -- "$@") BAK=true UBAK=true FOL=false
   eval set -- "$opt"
   while true; do
     case "$1" in
-      -n) UBAK=false; shift;;
-      -r) FOL=true; shift;;
-      --) shift; break;;
-      *) abort "Invalid cp_ch argument $1! Aborting!";;
+    -n)
+      UBAK=false
+      shift
+      ;;
+    -r)
+      FOL=true
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) abort "Invalid cp_ch argument $1! Aborting!" ;;
     esac
   done
   local SRC="$1" DEST="$2" OFILES="$1"
   $FOL && local OFILES=$(find $SRC -type f 2>/dev/null)
   [ -z $3 ] && PERM=0644 || PERM=$3
   case "$DEST" in
-    $TMPDIR/*|$MODULEROOT/*|$NVBASE/modules/$MODID/*) BAK=false;;
+  $TMPDIR/* | $MODULEROOT/* | $NVBASE/modules/$MODID/*) BAK=false ;;
   esac
   for OFILE in ${OFILES}; do
     if $FOL; then
@@ -62,10 +80,13 @@ cp_ch() {
       [ -d "$DEST" ] && local FILE="$DEST/$(basename $SRC)" || local FILE="$DEST"
     fi
     if $BAK && $UBAK; then
-      [ ! "$(grep "$FILE$" $INFO 2>/dev/null)" ] && echo "$FILE" >> $INFO
-      [ -f "$FILE" -a ! -f "$FILE~" ] && { mv -f $FILE $FILE~; echo "$FILE~" >> $INFO; }
+      [ ! "$(grep "$FILE$" $INFO 2>/dev/null)" ] && echo "$FILE" >>$INFO
+      [ -f "$FILE" -a ! -f "$FILE~" ] && {
+        mv -f $FILE $FILE~
+        echo "$FILE~" >>$INFO
+      }
     elif $BAK; then
-      [ ! "$(grep "$FILE$" $INFO 2>/dev/null)" ] && echo "$FILE" >> $INFO
+      [ ! "$(grep "$FILE$" $INFO 2>/dev/null)" ] && echo "$FILE" >>$INFO
     fi
     install -D -m $PERM "$OFILE" "$FILE"
   done
@@ -73,22 +94,29 @@ cp_ch() {
 
 install_script() {
   case "$1" in
-    -l) shift; local INPATH=$NVBASE/service.d;;
-    -p) shift; local INPATH=$NVBASE/post-fs-data.d;;
-    *) local INPATH=$NVBASE/service.d;;
+  -l)
+    shift
+    local INPATH=$NVBASE/service.d
+    ;;
+  -p)
+    shift
+    local INPATH=$NVBASE/post-fs-data.d
+    ;;
+  *) local INPATH=$NVBASE/service.d ;;
   esac
   [ "$(grep "#!/system/bin/sh" $1)" ] || sed -i "1i #!/system/bin/sh" $1
-  local i; for i in "MODPATH" "LIBDIR" "MODID" "INFO" "MODDIR"; do
+  local i
+  for i in "MODPATH" "LIBDIR" "MODID" "INFO" "MODDIR"; do
     case $i in
-      "MODPATH") sed -i "1a $i=$NVBASE/modules/$MODID" $1;;
-      "MODDIR") sed -i "1a $i=\${0%/*}" $1;;
-      *) sed -i "1a $i=$(eval echo \$$i)" $1;;
+    "MODPATH") sed -i "1a $i=$NVBASE/modules/$MODID" $1 ;;
+    "MODDIR") sed -i "1a $i=\${0%/*}" $1 ;;
+    *) sed -i "1a $i=$(eval echo \$$i)" $1 ;;
     esac
   done
   [ "$1" == "$MODPATH/uninstall.sh" ] && return 0
   case $(basename $1) in
-    post-fs-data.sh|service.sh) ;;
-    *) cp_ch -n $1 $INPATH/$(basename $1) 0755;;
+  post-fs-data.sh | service.sh) ;;
+  *) cp_ch -n $1 $INPATH/$(basename $1) 0755 ;;
   esac
 }
 
@@ -96,12 +124,24 @@ prop_process() {
   sed -i -e "/^#/d" -e "/^ *$/d" $1
   [ -f $MODPATH/system.prop ] || mktouch $MODPATH/system.prop
   while read LINE; do
-    echo "$LINE" >> $MODPATH/system.prop
-  done < $1
+    echo "$LINE" >>$MODPATH/system.prop
+  done <$1
 }
 
 # Credits
-
+ui_print "                ___    ____    _____   _   _ "
+ui_print "               / _ \  |  _ \  | ____| | \ | |"
+ui_print "              | | | | | |_) | |  _|   |  \| |"
+ui_print "              | |_| | |  __/  | |___  | |\  |"
+ui_print "               \___/  |_|     |_____| |_| \_|"
+ui_print ""
+ui_print " __        __ _____  ____ __     __ ___  _____ __        __ "
+ui_print " \ \      / /| ____|| __ )\ \   / /|_ _|| ____|\ \      / / "
+ui_print "  \ \ /\ / / |  _|  |  _ \ \ \ / /  | | |  _|   \ \ /\ / /  "
+ui_print "   \ V  V /  | |___ | |_) | \ V /   | | | |___   \ V  V /   "
+ui_print "    \_/\_/   |_____||____/   \_/   |___||_____|   \_/\_/    "
+ui_print ""
+sleep 0.5
 
 # Check for min/max api version
 [ -z $MINAPI ] || { [ $API -lt $MINAPI ] && abort "! Your system API of $API is less than the minimum api of $MINAPI! Aborting!"; }
@@ -151,15 +191,17 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d $MODPATH >&2
 # alias
 ui_print "  Initialization..."
 alias aapt='$MODPATH/common/tools/$ARCH/aapt'
+alias curl='$MODPATH/common/tools/$ARCH/curl --dns-servers 1.1.1.1,1.0.0.1'
 alias sign='$MODPATH/common/tools/zipsigner'
 # permission
-chmod 0755 "$MODPATH/common/tools/$ARCH/aapt"
+chmod -R 0755 "$MODPATH/common/tools/$ARCH"
 chmod 0755 "$MODPATH/common/tools/zipsigner"
 ui_print "  Initialization finished."
 
 # Run addons
 if [ "$(ls -A $MODPATH/common/addon/*/install.sh 2>/dev/null)" ]; then
-  ui_print " "; ui_print "- Running Addons -"
+  ui_print " "
+  ui_print "- Running Addons -"
   for i in $MODPATH/common/addon/*/install.sh; do
     ui_print "  Running $(echo $i | sed -r "s|$MODPATH/common/addon/(.*)/install.sh|\1|")..."
     . $i
@@ -182,7 +224,7 @@ if [ -f $INFO ]; then
         [ "$(ls -A $LINE 2>/dev/null)" ] && break 1 || rm -rf $LINE
       done
     fi
-  done < $INFO
+  done <$INFO
   rm -f $INFO
 fi
 
@@ -194,30 +236,33 @@ ui_print "- Installing"
 ui_print "   Installing for $ARCH SDK $API device..."
 # Remove comments from files and place them, add blank line to end if not already present
 for i in $(find $MODPATH -type f -name "*.sh" -o -name "*.prop" -o -name "*.rule"); do
-  [ -f $i ] && { sed -i -e "/^#/d" -e "/^ *$/d" $i; [ "$(tail -1 $i)" ] && echo "" >> $i; } || continue
+  [ -f $i ] && {
+    sed -i -e "/^#/d" -e "/^ *$/d" $i
+    [ "$(tail -1 $i)" ] && echo "" >>$i
+  } || continue
   case $i in
-    "$MODPATH/service.sh") install_script -l $i;;
-    "$MODPATH/post-fs-data.sh") install_script -p $i;;
-    "$MODPATH/uninstall.sh") if [ -s $INFO ] || [ "$(head -n1 $MODPATH/uninstall.sh)" != "# Don't modify anything after this" ]; then
-                               install_script $MODPATH/uninstall.sh
-                             else
-                               rm -f $INFO $MODPATH/uninstall.sh
-                             fi;;
+  "$MODPATH/service.sh") install_script -l $i ;;
+  "$MODPATH/post-fs-data.sh") install_script -p $i ;;
+  "$MODPATH/uninstall.sh") if [ -s $INFO ] || [ "$(head -n1 $MODPATH/uninstall.sh)" != "# Don't modify anything after this" ]; then
+    install_script $MODPATH/uninstall.sh
+  else
+    rm -f $INFO $MODPATH/uninstall.sh
+  fi ;;
   esac
 done
 
-$IS64BIT || for i in $(find $MODPATH/system -type d -name "lib64"); do rm -rf $i 2>/dev/null; done  
+$IS64BIT || for i in $(find $MODPATH/system -type d -name "lib64"); do rm -rf $i 2>/dev/null; done
 [ -d "/system/priv-app" ] || mv -f $MODPATH/system/priv-app $MODPATH/system/app 2>/dev/null
 [ -d "/system/xbin" ] || mv -f $MODPATH/system/xbin $MODPATH/system/bin 2>/dev/null
 if $DYNLIB; then
   for FILE in $(find $MODPATH/system/lib* -type f 2>/dev/null | sed "s|$MODPATH/system/||"); do
     [ -s $MODPATH/system/$FILE ] || continue
     case $FILE in
-      lib*/modules/*) continue;;
+    lib*/modules/*) continue ;;
     esac
     mkdir -p $(dirname $MODPATH/system/vendor/$FILE)
     mv -f $MODPATH/system/$FILE $MODPATH/system/vendor/$FILE
-    [ "$(ls -A `dirname $MODPATH/system/$FILE`)" ] || rm -rf `dirname $MODPATH/system/$FILE`
+    [ "$(ls -A $(dirname $MODPATH/system/$FILE))" ] || rm -rf $(dirname $MODPATH/system/$FILE)
   done
   # Delete empty lib folders (busybox find doesn't have this capability)
   toybox find $MODPATH/system/lib* -type d -empty -delete >/dev/null 2>&1
