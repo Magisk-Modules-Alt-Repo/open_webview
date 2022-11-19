@@ -4,6 +4,8 @@
 
 This module helps you to replace your system webview though Magisk.
 
+**ATTENTION!** According to this: [bromite issue](https://github.com/bromite/bromite/issues/2286#issuecomment-1232069101), from version v106.0.5249.72 bromite should work on A13. If this is not the case, reference should be made to the original project of Bromite: [chromium](https://chromium.googlesource.com/chromium/src/)
+
 ## Compatibility
 
 - Android 8+
@@ -24,7 +26,7 @@ If you found this helpful, please consider supporting development with a [coffe]
 ## Features
 
 - Works on any device running Android 8.0+ and Magisk 20.4+
-- Install [Bromite WebView v105.0.5195.147](https://github.com/bromite/bromite/releases/tag/105.0.5195.147)
+- Install [Bromite WebView v106.0.5249.163](https://github.com/bromite/bromite/releases/tag/105.0.5195.147)
 
 ## Credits
 
@@ -41,6 +43,13 @@ Copyright 2022 F3FFO
 The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-Alt-Repo/open_fonts/blob/master/LICENSE)
 
 ## Change logs
+
+# v2.0.0
+
+- Reworked the installation logic
+- Add cleaning logic for dalvik cache
+- Update bromite to v106.0.5249.163
+- Bug fix
 
 # v1.1.0
 
