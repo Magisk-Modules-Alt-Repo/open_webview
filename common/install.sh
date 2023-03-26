@@ -55,11 +55,7 @@ extract_lib() {
 create_overlay_min_api_29() {
 	sed -i "s/__webview-name__/${BROMITE_NAME}/g" "$MODPATH"/common/overlay29/res/xml/config_webview_packages.xml
 	sed -i "s/__webview-package__/${BROMITE_PACKAGE_NAME}/g" "$MODPATH"/common/overlay29/res/xml/config_webview_packages.xml
-	if [ $API -ge 30 ]; then
-		aapt2 compile -o "$MODPATH"/unsigned.apk -v "$MODPATH"/common/overlay29/AndroidManifest.xml -I /system/framework/framework-res.apk "$MODPATH"/common/overlay29/res >&2
-	else
-		aapt p -f -v -M "$MODPATH"/common/overlay29/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay29/res -F "$MODPATH"/unsigned.apk >&2
-	fi
+	aapt p -f -v -M "$MODPATH"/common/overlay29/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay29/res -F "$MODPATH"/unsigned.apk >&2
 }
 create_overlay_max_api_28() {
 	sed -i "s/__webview-name__/${BROMITE_NAME}/g" "$MODPATH"/common/overlay28/res/xml/config_webview_packages.xml
