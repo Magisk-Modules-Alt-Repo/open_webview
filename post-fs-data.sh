@@ -30,10 +30,15 @@ find_overlay_path
 set_state
 
 if [ ! -f "$MODDIR"/.webview ]; then
-	sed -i "/item packageName=\"${OVERLAY_PACKAGE_NAME}\"/d" $OVERLAY_LIST
-	sed -i "s|</overlays>|    <item packageName=\"${OVERLAY_PACKAGE_NAME}\" userId=\"0\" targetPackageName=\"android\" baseCodePath=\"${OVERLAY_PATH}/${BROMITE_OVERLAY_APK_FILE}\" state=\"${STATE}\" isEnabled=\"true\" isStatic=\"true\" priority=\"9999\" /></overlays>|" $OVERLAY_LIST
-
 	rm -rf /data/resource-cache/* /data/dalvik-cache/* /cache/dalvik-cache/* /data/system/package_cache/*
 
+	sed -i "/com*webview/d" /data/system/packages.list
+	sed -i "/com*webview/d" /data/system/packages.xml
+	sed -i "/com.linuxandria.WebviewOverlay/d" $OVERLAY_LIST
+	sed -i "/com.linuxandria.android.webviewoverlay/d" $OVERLAY_LIST
+
+	sed -i "/item packageName=\"${OVERLAY_PACKAGE_NAME}\"/d" $OVERLAY_LIST
+	sed -i "s|</overlays>|    <item packageName=\"${OVERLAY_PACKAGE_NAME}\" userId=\"0\" targetPackageName=\"android\" baseCodePath=\"${OVERLAY_PATH}/${BROMITE_OVERLAY_APK_FILE}\" state=\"${STATE}\" isEnabled=\"true\" isStatic=\"true\" priority=\"9999\" /></overlays>|" $OVERLAY_LIST
+	
 	touch "$MODDIR"/.webview
 fi
