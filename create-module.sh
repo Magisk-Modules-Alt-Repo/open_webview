@@ -1,12 +1,18 @@
 #!/bin/bash
 MODULE_NAME=open-webview.zip
-TOOLS=tools.tar.xz
+TOOLS=tools.tar
+ROOT_DIR="$(pwd)"
 
 echo "deleting old files..."
 rm -rf $MODULE_NAME
-rm -rf common/tools/$TOOLS
+rm -rf common/tools/"${TOOLS}.xz"
 echo -e "ok!\n\nzipping tools..."
-tar -cJf common/tools/$TOOLS common/tools/tools
+cd common/tools/tools
+7z a -ttar -r $TOOLS * >& /dev/null
+7z a -txz -r "${TOOLS}.xz" $TOOLS >& /dev/null
+rm -rf $TOOLS
+mv -f "${TOOLS}.xz" ../
+cd $ROOT_DIR
 echo -e "ok!\n\ncreating module zip..."
-7z a -tzip -r $MODULE_NAME ./* -x!./git/\* -x!./.github/\* -x!./img/\* -x!./common/tools/tools/\* -x!./README.md\* -x!./CHANGELOG.md\* -x!./gitignore\* >& /dev/null
+7z a -tzip -r $MODULE_NAME * -xr!.git* -xr!./img -xr!common/tools/tools -x!*.md >& /dev/null
 echo "done!"
