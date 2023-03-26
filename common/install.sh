@@ -13,19 +13,19 @@ BROMITE_SYSTEM_PATH=system/app/BromiteWebview
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 
 download_file() {
-	STATUS = 0
+	STATUS=0
 	ui_print "  Downloading ${1}..."
 
-	curl -kLo "$TMPDIR"/"${1}" $2
+	curl -kLo "$TMPDIR"/$1 $2
 
-	if [[ ! -f "$TMPDIR"/"${1}" ]]; then
+	if [[ ! -f "$TMPDIR"/$1 ]]; then
 		STATUS=0
 	else
 		STATUS=1
 	fi
 }
 check_status() {
-	if [ "${STATUS}" -eq 0 ]; then
+	if [ $STATUS -eq 0 ]; then
 		ui_print ""
 		ui_print "  !!! Dowload failed !!!"
 		ui_print ""
@@ -33,8 +33,8 @@ check_status() {
 	fi
 }
 check_integrity() {
-	SHA_FILE_CALCULATED=$(sha256sum ${1} | awk '{print $1}')
-	SHA_FILE=$(cat ${2} | awk -v val="${ARCH}_SystemWebView.apk" '$2 == val {print $1}')
+	SHA_FILE_CALCULATED=$(sha256sum $1 | awk '{print $1}')
+	SHA_FILE=$(cat $2 | awk -v val="${ARCH}_SystemWebView.apk" '$2 == val {print $1}')
 	if [ $SHA_FILE_CALCULATED == $SHA_FILE ]; then
 		ui_print "  Integrity checked!"
 	else
@@ -103,8 +103,8 @@ clean_up() {
 	fi
 }
 
-ui_print "  Detecting architecture..."
-ui_print "  CPU architecture: ${ARCH}."
+# ui_print "  Detecting architecture..."
+# ui_print "  CPU architecture: ${ARCH}."
 download_file $BROMITE_APK_FILE $BROMITE_URL
 check_status
 download_file $BROMITE_SHA_FILE $BROMITE_SHA_URL
