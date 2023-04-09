@@ -14,5 +14,5 @@ rm -rf $TOOLS
 mv -f "${TOOLS}.xz" ../
 cd $ROOT_DIR
 echo -e "ok!\n\ncreating module zip..."
-7z a -tzip -r $MODULE_NAME * -xr!.git* -xr!./img -xr!common/tools/tools -x!*.md >& /dev/null
+7z a -tzip -r $MODULE_NAME * -xr!.git* -xr!img -xr!common/tools/tools -xr!overlays -x!*.md -x!create-module.sh >& /dev/null
 echo "done!"
