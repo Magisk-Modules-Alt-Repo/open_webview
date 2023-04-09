@@ -1,23 +1,12 @@
 #!/system/bin/sh
-MODDIR=${0%/*}
 API=$(grep_prop ro.build.version.sdk)
 OVERLAY_LIST="/data/system/overlays.xml"
-BROMITE_OVERLAY_APK_FILE="WebviewOverlay.apk"
-OVERLAY_PACKAGE_NAME="org.Bromite.WebviewOverlay"
 
-find_overlay_path() {
-	if [ -d /system_ext/overlay ]; then
-		OVERLAY_PATH=system/system_ext/overlay
-	elif [ -d /product/overlay ]; then
-		OVERLAY_PATH=system/product/overlay
-	elif [ -d /vendor/overlay ]; then
-		OVERLAY_PATH=system/vendor/overlay
-	elif [ -d /system/overlay ]; then
-		OVERLAY_PATH=system/overlay
-	else
-		STATUS=0
-	fi
-}
+RESET=$(grep "RESET=" /sdcard/.webview | cut -d"=" -f2)
+OVERLAY_APK_FILE=$(grep "OVERLAY_APK_FILE=" /sdcard/.webview | cut -d"=" -f2)
+OVERLAY_PACKAGE_NAME=$(grep "OVERLAY_PACKAGE_NAME=" /sdcard/.webview | cut -d"=" -f2)
+OVERLAY_PATH=$(grep "OVERLAY_PATH=" /sdcard/.webview | cut -d"=" -f2)
+
 set_state() {
 	if [ $API -lt 27 ]; then
 		STATE=3
@@ -26,10 +15,9 @@ set_state() {
 	fi
 }
 
-find_overlay_path
 set_state
 
-if [ ! -f "$MODDIR"/.webview ]; then
+if [ $RESET -eq 1 ]; then
 	rm -rf /data/resource-cache/* /data/dalvik-cache/* /cache/dalvik-cache/* /data/system/package_cache/*
 
 	sed -i "/com*webview/d" /data/system/packages.list
@@ -38,7 +26,7 @@ if [ ! -f "$MODDIR"/.webview ]; then
 	sed -i "/com.linuxandria.android.webviewoverlay/d" $OVERLAY_LIST
 
 	sed -i "/item packageName=\"${OVERLAY_PACKAGE_NAME}\"/d" $OVERLAY_LIST
-	sed -i "s|</overlays>|    <item packageName=\"${OVERLAY_PACKAGE_NAME}\" userId=\"0\" targetPackageName=\"android\" baseCodePath=\"${OVERLAY_PATH}/${BROMITE_OVERLAY_APK_FILE}\" state=\"${STATE}\" isEnabled=\"true\" isStatic=\"true\" priority=\"9999\" /></overlays>|" $OVERLAY_LIST
-	
-	touch "$MODDIR"/.webview
-fi
+	sed -i "s|</overlays>|    <item packageName=\"${OVERLAY_PACKAGE_NAME}\" userId=\"0\" targetPackageName=\"android\" baseCodePath=\"${OVERLAY_PATH}/${OVERLAY_APK_FILE}\" state=\"${STATE}\" isEnabled=\"true\" isStatic=\"true\" priority=\"9999\" /></overlays>|" $OVERLAY_LIST
+
+	sed -i "s/RESET=1/RESET=0/" /sdcard/.webview
+fi  

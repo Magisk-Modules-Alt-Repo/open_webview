@@ -2,16 +2,32 @@
 MANUFACTER=$(getprop ro.product.manufacturer)
 ABI=$(grep_prop ro.product.cpu.abi)
 STATUS=0
-BROMITE_VERSION=108.0.5359.109
-BROMITE_URL=https://github.com/bromite/bromite/releases/download/${BROMITE_VERSION}/${ARCH}_SystemWebView.apk
-BROMITE_SHA_URL=https://github.com/bromite/bromite/releases/download/${BROMITE_VERSION}/brm_${BROMITE_VERSION}.sha256.txt
-BROMITE_APK_FILE="BromiteWebview.apk"
-BROMITE_SHA_FILE=brm_${BROMITE_VERSION}.sha256.txt
-BROMITE_NAME="Bromite"
-BROMITE_PACKAGE_NAME="org.bromite.webview"
-BROMITE_SYSTEM_PATH=system/app/BromiteWebview
+SKIP_INSTALLATION=0
+NEXT_SELECTION=1
+OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
+OVERLAY_ZIP_FILE="overlay.zip"
 
+bromite() {
+	VW_VERSION=108.0.5359.109
+	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/${ARCH}_SystemWebView.apk
+	VW_SHA_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/brm_${VW_VERSION}.sha256.txt
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/dev/overlays/bromite-overlay${OVERLAY_API}.zip
+	VW_APK_FILE="BromiteWebview.apk"
+	VW_SHA_FILE=brm_${VW_VERSION}.sha256.txt
+	VW_NAME="Bromite"
+	VW_SYSTEM_PATH=system/app/BromiteWebview
+	VW_OVERLAY_PACKAGE="org.Bromite.WebviewOverlay"
+}
+mulch() {
+	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
+	VW_SHA_URL=
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/dev/overlays/mulch-overlay${OVERLAY_API}.zip
+	VW_APK_FILE="MulchWebview.apk"
+	VW_NAME="Mulch"
+	VW_SYSTEM_PATH=system/app/MulchWebview
+	VW_OVERLAY_PACKAGE="us.spotco.WebviewOverlay"
+}
 download_file() {
 	STATUS=0
 	ui_print "  Downloading ${1}..."
@@ -43,39 +59,32 @@ check_integrity() {
 	fi
 }
 extract_lib() {
-	#mktouch "$MODPATH"/$BROMITE_SYSTEM_PATH/.placeholder
-	mkdir -p "$MODPATH"/$BROMITE_SYSTEM_PATH
-	cp_ch "$TMPDIR"/$BROMITE_APK_FILE "$MODPATH"/$BROMITE_SYSTEM_PATH/webview.apk
-	cp_ch "$TMPDIR"/$BROMITE_APK_FILE "$TMPDIR"/"${BROMITE_NAME}Webview.zip"
-	mkdir -p "$TMPDIR"/"${BROMITE_NAME}Webview" "$MODPATH"/$BROMITE_SYSTEM_PATH/lib/arm64 "$MODPATH"/$BROMITE_SYSTEM_PATH/lib/arm
-	unzip -qo "$TMPDIR"/"${BROMITE_NAME}Webview.zip" -d "$TMPDIR"/"${BROMITE_NAME}Webview" >&2
-	cp_ch "$TMPDIR"/"${BROMITE_NAME}Webview"/lib/arm64-v8a/* "$MODPATH"/$BROMITE_SYSTEM_PATH/lib/arm64
-	cp_ch "$TMPDIR"/"${BROMITE_NAME}Webview"/lib/armeabi-v7a/* "$MODPATH"/$BROMITE_SYSTEM_PATH/lib/arm
+	mkdir -p "$MODPATH"/$VW_SYSTEM_PATH
+	cp_ch "$TMPDIR"/$VW_APK_FILE "$MODPATH"/$VW_SYSTEM_PATH/webview.apk
+	cp_ch "$TMPDIR"/$VW_APK_FILE "$TMPDIR"/"${VW_NAME}Webview.zip"
+	mkdir -p "$TMPDIR"/"${VW_NAME}Webview" "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64 "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
+	unzip -qo "$TMPDIR"/"${VW_NAME}Webview.zip" -d "$TMPDIR"/"${VW_NAME}Webview" >&2
+	cp_ch "$TMPDIR"/"${VW_NAME}Webview"/lib/arm64-v8a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64
+	cp_ch "$TMPDIR"/"${VW_NAME}Webview"/lib/armeabi-v7a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
 }
-create_overlay_min_api_29() {
-	sed -i "s/__webview-name__/${BROMITE_NAME}/g" "$MODPATH"/common/overlay29/res/xml/config_webview_packages.xml
-	sed -i "s/__webview-package__/${BROMITE_PACKAGE_NAME}/g" "$MODPATH"/common/overlay29/res/xml/config_webview_packages.xml
-	aapt p -f -v -M "$MODPATH"/common/overlay29/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay29/res -F "$MODPATH"/unsigned.apk >&2
-}
-create_overlay_max_api_28() {
-	sed -i "s/__webview-name__/${BROMITE_NAME}/g" "$MODPATH"/common/overlay28/res/xml/config_webview_packages.xml
-	sed -i "s/__webview-package__/${BROMITE_PACKAGE_NAME}/g" "$MODPATH"/common/overlay28/res/xml/config_webview_packages.xml
-	aapt p -f -v -M "$MODPATH"/common/overlay28/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay28/res -F "$MODPATH"/unsigned.apk >&2
+create_overlay() {
+	cp_ch "$TMPDIR"/$OVERLAY_ZIP_FILE "$MODPATH"/common
+	unzip -qo "$MODPATH"/common/$OVERLAY_ZIP_FILE -d "$MODPATH"/common >&2
+	aapt p -f -v -M "$MODPATH"/common/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay/res -F "$MODPATH"/unsigned.apk >&2
 }
 sign_framework_res() {
 	sign "$MODPATH"/unsigned.apk "$MODPATH"/signed.apk
-	cp -rf "$MODPATH"/signed.apk "$MODPATH"/common/$OVERLAY_APK_FILE
-	rm -rf "$MODPATH"/signed.apk "$MODPATH"/unsigned.apk
+	cp_ch "$MODPATH"/signed.apk "$MODPATH"/common/$OVERLAY_APK_FILE
 }
 find_overlay_path() {
 	if [ -d /system_ext/overlay ]; then
-		OVERLAY_PATH=system/system_ext/overlay
+		OVERLAY_PATH=system/system_ext/overlay/
 	elif [ -d /product/overlay ]; then
-		OVERLAY_PATH=system/product/overlay
+		OVERLAY_PATH=system/product/overlay/
 	elif [ -d /vendor/overlay ]; then
-		OVERLAY_PATH=system/vendor/overlay
+		OVERLAY_PATH=system/vendor/overlay/
 	elif [ -d /system/overlay ]; then
-		OVERLAY_PATH=system/overlay
+		OVERLAY_PATH=system/overlay/
 	else
 		STATUS=0
 	fi
@@ -85,54 +94,92 @@ force_overlay() {
 	cp_ch "$MODPATH"/common/$OVERLAY_APK_FILE "$MODPATH"/$OVERLAY_PATH
 }
 clean_up() {
-	if [ ${1} -eq 1 ]; then
+	if [ $1 -eq 1 ]; then
 		ui_print "  Cleaning up..."
-		#rm -rf "$MODPATH"/$BROMITE_SYSTEM_PATH/.placeholder
+		rm -rf "$MODPATH"/common/$OVERLAY_ZIP_FILE
+		rm -rf "$MODPATH"/signed.apk "$MODPATH"/unsigned.apk
 		ui_print "  !!! Dalvik cache will be cleared next boot !!!"
 		ui_print "  !!! Boot time may be longer !!!"
 	else
 		ui_print ""
-		ui_print "  Installation failed."
-		ui_print "  Cleaning up..."
-		#rm -rf "$MODPATH"/$BROMITE_SYSTEM_PATH "$MODPATH"/$OVERLAY_PATH
+		ui_print "  Aborting..."
 		exit 1
 	fi
 }
 
-# ui_print "  Detecting architecture..."
-# ui_print "  CPU architecture: ${ARCH}."
-download_file $BROMITE_APK_FILE $BROMITE_URL
-check_status
-download_file $BROMITE_SHA_FILE $BROMITE_SHA_URL
-check_status
-ui_print "  Checking integrity..."
-check_integrity $BROMITE_APK_FILE $BROMITE_SHA_FILE
-ui_print "  Installing webview..."
-extract_lib
-ui_print "    creating overlays..."
+
 if [ $API -ge 29 ]; then
-	create_overlay_min_api_29
+	OVERLAY_API=29
+fi
+
+ui_print "  Choose between:"
+ui_print "    Bromite, Mulch"
+sleep 3
+ui_print ""
+ui_print "  Select:"
+ui_print "  -> Bromite [Vol+ = yes, Vol- = no]"
+if chooseport 3; then
+	bromite
+	NEXT_SELECTION=0
+fi
+if [ "${NEXT_SELECTION}" -eq 1 ]; then
+	ui_print "  -> Mulch [Vol+ = yes, Vol- = no]"
+	if chooseport 3; then
+		mulch
+		NEXT_SELECTION=0
+	else
+		SKIP_INSTALLATION=1
+	fi
+fi
+
+if [ "${SKIP_INSTALLATION}" -eq 0 ]; then
+	ui_print "  Detecting architecture..."
+	ui_print "  CPU architecture: ${ARCH}"
+	download_file $VW_APK_FILE $VW_APK_URL
+	check_status
+	if [ ! -z "$VW_SHA_URL" ]; then
+		download_file $VW_SHA_FILE $VW_SHA_URL
+		check_status
+		ui_print "  Checking integrity..."
+		check_integrity $VW_APK_FILE $VW_SHA_FILE
+	fi
+
+	ui_print "  Installing webview..."
+	extract_lib
+	ui_print "    downloading overlay"
+	download_file $OVERLAY_ZIP_FILE $VW_OVERLAY_URL
+	ui_print "    creating overlay..."
+	create_overlay
+	if [ -f "${MODPATH}/unsigned.apk" ]; then
+		sign_framework_res
+	else
+		ui_print ""
+		ui_print "  !!! Overlay creation has failed !!!"
+		ui_print "  Compatibility is unlikely, please report this to your ROM developer."
+		ui_print "  Some ROMs need a patch to fix this."
+		ui_print "  Do NOT report this issue to me."
+		ui_print ""
+		STATUS=0
+		clean_up $STATUS
+	fi
+	find_overlay_path
+	if [ $STATUS -eq 1 ]; then
+		force_overlay
+
+		if [ ! -f "${MODPATH}/$OVERLAY_PATH$OVERLAY_APK_FILE" ]; then
+			STATUS=0
+		fi
+
+		if [ -f "/sdcard/.webview" ]; then
+			rm -rf /sdcard/.webview
+		fi
+		echo "RESET=1" >> /sdcard/.webview
+		echo "OVERLAY_PATH=${OVERLAY_PATH}" >> /sdcard/.webview
+		echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >> /sdcard/.webview
+		echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >> /sdcard/.webview
+	fi
 else
-	create_overlay_max_api_28
-fi
-if [ -f "${MODPATH}/unsigned.apk" ]; then
-	sign_framework_res
-else
-	ui_print ""
-	ui_print "  !!! Overlay creation has failed !!!"
-	ui_print "  Compatibility is unlikely, please report this to your ROM developer."
-	ui_print "  Some ROMs need a patch to fix this."
-	ui_print "  Do NOT report this issue to me."
-	ui_print ""
-	STATUS=0
-	clean_up $STATUS
-fi
-find_overlay_path
-if [ $STATUS -eq 1 ]; then
-	force_overlay
-fi
-if [ ! -f "${MODPATH}/$OVERLAY_PATH/$OVERLAY_APK_FILE" ]; then
-	STATUS=0
+	ui_print "  Webview will not be replaced!"
 fi
 
 clean_up $STATUS
