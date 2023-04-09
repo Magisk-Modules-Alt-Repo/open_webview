@@ -1,4 +1,6 @@
 #!/system/bin/sh
+MODDIR=${0%/*}
+rm -rf /sdcard/.webview
 # Don't modify anything after this
 if [ -f $INFO ]; then
   while read LINE; do
