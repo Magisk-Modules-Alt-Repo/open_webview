@@ -4,7 +4,7 @@
 
 This module helps you to replace your system webview though Magisk.
 
-**ATTENTION!** According to this: [bromite issue](https://github.com/bromite/bromite/issues/2286#issuecomment-1232069101), from version v106.0.5249.72 bromite should work on A13. If this is not the case, reference should be made to the original project of Bromite: [chromium](https://chromium.googlesource.com/chromium/src/)
+>**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:<br/><br/>- go to fdroid and re-download the latest version<br/>- manually download the apk and install it
 
 ## Compatibility
 
@@ -17,7 +17,8 @@ This module helps you to replace your system webview though Magisk.
 
 ## DISCLAIMER
 
-**I am not responsible for any damage that may occur to your device, so it is your own choice to attempt this module.**
+Before flash module, please read below:
+>I AM NOT RESPONSIBLE SOME YOUR FEATURE FROM YOUR DEVICE IF DOESN'T WORK PROPERLY. BEFORE FLASH THE MODULE, PLEASE READ LINE CODES AND SELECT GOOGLE SERVICES YOU NEEDS. YOU ARE FLASHING THIS MAGISK MODULE AND ITS YOUR CHOICE TO DO IT OR NOT TO DO IT AND YOU'RE THE ONE DOING IT. I JUST WANT TO HELP OTHERS OUT.
 
 ## Support
 
@@ -26,19 +27,22 @@ If you found this helpful, please consider supporting development with a [coffe]
 ## Features
 
 - Works on any device running Android 8.0+ and Magisk 20.4+
-- Install [Bromite WebView v106.0.5249.163](https://github.com/bromite/bromite/releases/tag/105.0.5195.147)
+- Replace the webview with one of:
+    1. [Bromite WebView](https://github.com/bromite/bromite)
+    2. [Mulch](https://gitlab.com/divested-mobile/mulch)
 
 ## Credits
 
 - [MMT-Extended](https://github.com/Zackptg5/MMT-Extended) by [Zackptg5](https://github.com/Zackptg5)
 - [Bromite](https://github.com/bromite/bromite)
+- [DivestOS](https://gitlab.com/divested-mobile)
 - [cUrl](https://github.com/curl/curl)
 - [cUrl binary](https://github.com/F3FFO/compile_zlib_openssl_curl_android)
 - [Zipsigner](https://github.com/Magisk-Modules-Repo/zipsigner) by [osm0sis](https://github.com/osm0sis)
 
 ## License
 
-Copyright 2022 F3FFO
+Copyright 2023 F3FFO
 
 The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-Alt-Repo/open_fonts/blob/master/LICENSE)
 
