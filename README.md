@@ -50,6 +50,13 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
+# v2.1.0
+
+- Add Mulch webview
+- Add status in the module description
+- Update bromite to v108.0.5359.156
+- Bug fix
+
 # v2.0.0
 
 - Reworked the installation logic
