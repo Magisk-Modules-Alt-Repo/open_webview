@@ -13,7 +13,9 @@ This module helps you to replace your system webview though Magisk.
 
 ## Tested Device
 
-- Many devices with [LOS 19](https://lineageos.org/)
+- [LOS 19](https://lineageos.org/)
+- [LOS 20](https://lineageos.org/)
+- And more...
 
 ## DISCLAIMER
 
