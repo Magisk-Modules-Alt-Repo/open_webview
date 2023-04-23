@@ -14,7 +14,6 @@ bromite() {
 	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/${ARCH}_SystemWebView.apk
 	VW_SHA_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/brm_${VW_VERSION}.sha256.txt
 	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/dev/overlays/bromite-overlay${OVERLAY_API}.zip
-	VW_APK_FILE="BromiteWebview.apk"
 	VW_SHA_FILE=brm_${VW_VERSION}.sha256.txt
 	VW_NAME="Bromite"
 	VW_SYSTEM_PATH=system/app/BromiteWebview
@@ -25,7 +24,6 @@ mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
 	VW_SHA_URL=
 	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/dev/overlays/mulch-overlay${OVERLAY_API}.zip
-	VW_APK_FILE="MulchWebview.apk"
 	VW_NAME="Mulch"
 	VW_SYSTEM_PATH=system/app/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
@@ -33,7 +31,7 @@ mulch() {
 }
 download_file() {
 	STATUS=0
-	ui_print "  Downloading ${1}..."
+	ui_print "  Downloading..."
 
 	curl -kLo "$TMPDIR"/$1 $2
 
@@ -71,12 +69,10 @@ replace_old_webview() {
 	done
 }
 copy_webview_file() {
-	mv "$TMPDIR"/$VW_APK_FILE "$TMPDIR"/webview.apk
-	cp_ch "$TMPDIR"/webview.apk "$MODPATH"/webview.apk
 	cp_ch "$TMPDIR"/webview.apk "$MODPATH"/$VW_SYSTEM_PATH/webview.apk
 	cp_ch "$TMPDIR"/webview.apk "$TMPDIR"/webview.zip
 }
-extract_lib_system() {
+extract_lib() {
 	mkdir -p "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64 "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
 	cp -rf "$TMPDIR"/webview/lib/arm64-v8a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64
 	cp -rf "$TMPDIR"/webview/lib/armeabi-v7a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
@@ -84,9 +80,10 @@ extract_lib_system() {
 install_webview() {
 	mktouch "$MODPATH"/$VW_SYSTEM_PATH/.replace
 	copy_webview_file
+	su -c "pm install -r -t --user 0 ${TMPDIR}/webview.apk" >&2
 	mkdir -p "$TMPDIR"/webview
 	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
-	extract_lib_system
+	extract_lib
 }
 create_overlay() {
 	cp_ch "$TMPDIR"/$OVERLAY_ZIP_FILE "$MODPATH"/common
@@ -127,8 +124,8 @@ clean_up() {
 		ui_print "  Cleaning up..."
 		rm -rf "$MODPATH"/common/$OVERLAY_ZIP_FILE
 		rm -rf "$MODPATH"/signed.apk "$MODPATH"/unsigned.apk
-		ui_print "  !!! Dalvik cache will be cleared next boot !!!"
-		ui_print "  !!! Boot time may be longer !!!"
+		ui_print "  !!! Dalvik cache will be cleared next boot."
+		ui_print "  !!! Boot time may be longer."
 	else
 		ui_print ""
 		abort "  Aborting..."
@@ -169,13 +166,13 @@ fi
 if [ $SKIP_INSTALLATION -eq 0 ]; then
 	ui_print "  Detecting architecture..."
 	ui_print "  CPU architecture: ${ARCH}"
-	download_file $VW_APK_FILE $VW_APK_URL
+	download_file webview.apk $VW_APK_URL
 	check_status
 	if [ ! -z "$VW_SHA_URL" ]; then
 		download_file $VW_SHA_FILE $VW_SHA_URL
 		check_status
 		ui_print "  Checking integrity..."
-		check_integrity $VW_APK_FILE $VW_SHA_FILE
+		check_integrity webview.apk $VW_SHA_FILE
 	fi
 
 	ui_print "  Installing webview..."
