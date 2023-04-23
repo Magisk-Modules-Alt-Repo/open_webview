@@ -8,13 +8,13 @@ NEXT_SELECTION=1
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 OVERLAY_ZIP_FILE="overlay.zip"
+
 bromite() {
 	VW_VERSION=108.0.5359.156
 	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/${ARCH}_SystemWebView.apk
 	VW_SHA_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/brm_${VW_VERSION}.sha256.txt
 	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/master/overlays/bromite-overlay${OVERLAY_API}.zip
 	VW_SHA_FILE=brm_${VW_VERSION}.sha256.txt
-	VW_NAME="Bromite"
 	VW_SYSTEM_PATH=system/app/BromiteWebview
 	VW_PACKAGE="org.bromite.webview"
 	VW_OVERLAY_PACKAGE="org.Bromite.WebviewOverlay"
@@ -23,7 +23,6 @@ mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
 	VW_SHA_URL=
 	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/master/overlays/mulch-overlay${OVERLAY_API}.zip
-	VW_NAME="Mulch"
 	VW_SYSTEM_PATH=system/app/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
 	VW_OVERLAY_PACKAGE="us.spotco.WebviewOverlay"
@@ -204,7 +203,6 @@ if [ $SKIP_INSTALLATION -eq 0 ]; then
 			rm -rf $CONFIG_FILE
 		fi
 		echo "RESET=1" >> $CONFIG_FILE
-		echo "VW_NAME=${VW_NAME}" >> $CONFIG_FILE
 		echo "OVERLAY_PATH=${OVERLAY_PATH}" >> $CONFIG_FILE
 		echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >> $CONFIG_FILE
 		echo "VW_PACKAGE=${VW_PACKAGE}" >> $CONFIG_FILE
