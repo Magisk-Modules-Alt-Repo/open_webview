@@ -8,12 +8,11 @@ NEXT_SELECTION=1
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 OVERLAY_ZIP_FILE="overlay.zip"
-
 bromite() {
 	VW_VERSION=108.0.5359.156
 	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/${ARCH}_SystemWebView.apk
 	VW_SHA_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/brm_${VW_VERSION}.sha256.txt
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/dev/overlays/bromite-overlay${OVERLAY_API}.zip
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/master/overlays/bromite-overlay${OVERLAY_API}.zip
 	VW_SHA_FILE=brm_${VW_VERSION}.sha256.txt
 	VW_NAME="Bromite"
 	VW_SYSTEM_PATH=system/app/BromiteWebview
@@ -23,7 +22,7 @@ bromite() {
 mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
 	VW_SHA_URL=
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/dev/overlays/mulch-overlay${OVERLAY_API}.zip
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/master/overlays/mulch-overlay${OVERLAY_API}.zip
 	VW_NAME="Mulch"
 	VW_SYSTEM_PATH=system/app/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
