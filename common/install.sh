@@ -1,67 +1,89 @@
 #!/system/bin/sh
-MANUFACTER=$(getprop ro.product.manufacturer)
-ABI=$(grep_prop ro.product.cpu.abi)
-CONFIG_FILE="$MODPATH/.webview"
-STATUS=0
 SKIP_INSTALLATION=0
-NEXT_SELECTION=1
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 OVERLAY_ZIP_FILE="overlay.zip"
+CONFIG_FILE="$MODPATH/.webview"
 
+get_version_github() {
+	curl -kLs "https://api.github.com/repos/$1/releases/latest" |
+		grep '"tag_name":' |
+		sed -E 's/.*"(.*)".*/\1/'
+}
+get_sha_gitlab_lfs() {
+	curl -kLs "https://gitlab.com/api/v4/projects/$1/repository/files/$2" |
+		grep 'oid sha256:' |
+		cut -d":" -f2
+}
+get_sha_gitlab() {
+	curl -kLs "https://gitlab.com/api/v4/projects/$1/repository/files/$2" |
+		grep 'content_sha256:' |
+		cut -d":" -f2
+}
+get_bromite_sha() {
+	curl -kLs "https://github.com/bromite/bromite/releases/download/$1/brm_$1.sha256.txt" |
+		awk -v val="${ARCH}_SystemWebView.apk" '$2 == val {print $1}'
+}
 bromite() {
-	VW_VERSION=108.0.5359.156
-	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/${ARCH}_SystemWebView.apk
-	VW_SHA_URL=https://github.com/bromite/bromite/releases/download/${VW_VERSION}/brm_${VW_VERSION}.sha256.txt
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/master/overlays/bromite-overlay${OVERLAY_API}.zip
-	VW_SHA_FILE=brm_${VW_VERSION}.sha256.txt
+	tag_name_bormite=$(get_version_github "bromite/bromite")
+	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${tag_name_bormite}/${ARCH}_SystemWebView.apk
+	VW_TRICHROME_LIB_URL=""
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/vanadium-webview/overlays/bromite-overlay${OVERLAY_API}.zip
+	VW_SHA=$(get_bromite_sha $tag_name_bormite)
 	VW_SYSTEM_PATH=system/app/BromiteWebview
 	VW_PACKAGE="org.bromite.webview"
 	VW_OVERLAY_PACKAGE="org.Bromite.WebviewOverlay"
 }
 mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
-	VW_SHA_URL=
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/master/overlays/mulch-overlay${OVERLAY_API}.zip
+	VW_TRICHROME_LIB_URL=""
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/vanadium-webview/overlays/mulch-overlay${OVERLAY_API}.zip
+	VW_SHA=$(get_sha_gitlab_lfs "30111188" "prebuilt%2F${ARCH}%2Fwebview.apk/raw?ref=master")
 	VW_SYSTEM_PATH=system/app/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
 	VW_OVERLAY_PACKAGE="us.spotco.WebviewOverlay"
 }
+vanadium() {
+	VW_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeWebView.apk/raw?ref=13
+	VW_TRICHROME_LIB_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeLibrary.apk/raw?ref=13
+	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/vanadium-webview/overlays/vanadium-overlay${OVERLAY_API}.zip
+	# VW_SHA=$(get_sha_gitlab "40905333" "prebuilt%2F${1}%2FTrichromeWebView.apk?ref=13")
+	VW_SHA=""
+	VW_SYSTEM_PATH=system/app/VanadiumWebview
+	VW_PACKAGE="app.vanadium.webview"
+	VW_OVERLAY_PACKAGE="app.vanadium.WebviewOverlay"
+}
 download_file() {
-	STATUS=0
 	ui_print "  Downloading..."
 
-	curl -kLo "$TMPDIR"/$1 $2
+	curl -skL "$2" -o "$TMPDIR"/$1
 
-	if [[ ! -f "$TMPDIR/$1" ]]; then
-		STATUS=0
-	else
-		STATUS=1
+	if [[ ! -f "$TMPDIR"/$1 ]]; then
+		check_status 1
 	fi
 }
 check_status() {
-	if [ $STATUS -eq 0 ]; then
+	if [[ $1 -eq 0 ]]; then
 		ui_print ""
 		ui_print "  !!! Dowload failed !!!"
 		ui_print ""
-		exit 1
+		clean_up $1
 	fi
 }
 check_integrity() {
 	SHA_FILE_CALCULATED=$(sha256sum $1 | awk '{print $1}')
-	SHA_FILE=$(cat $2 | awk -v val="${ARCH}_SystemWebView.apk" '$2 == val {print $1}')
-	if [ $SHA_FILE_CALCULATED = $SHA_FILE ]; then
+	if [[ $SHA_FILE_CALCULATED = $2 ]]; then
 		ui_print "  Integrity checked!"
 	else
 		ui_print "  Integrity not checked!"
-		exit 1
+		clean_up 1
 	fi
 }
 replace_old_webview() {
 	for i in "com.android.chrome" "com.android.webview" "com.google.android.webview"; do
 		unsanitized_path=$(cmd package dump "$i" | grep codePath)
 		path=${unsanitized_path##*=}
-		if [ -d "$path" ]; then
+		if [[ -d $path ]]; then
 			mktouch "$MODPATH"$path/.replace
 		fi
 	done
@@ -78,6 +100,11 @@ extract_lib() {
 install_webview() {
 	mktouch "$MODPATH"/$VW_SYSTEM_PATH/.replace
 	copy_webview_file
+	if [[ ! -z $VW_TRICHROME_LIB_URL ]]; then
+		download_file trichrome.apk $VW_TRICHROME_LIB_URL
+		ui_print "  Installing trichrome library..."
+		su -c "pm install -r -t --user 0 ${TMPDIR}/trichrome.apk" >&2
+	fi
 	su -c "pm install -r -t --user 0 ${TMPDIR}/webview.apk" >&2
 	mkdir -p "$TMPDIR"/webview
 	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
@@ -86,23 +113,23 @@ install_webview() {
 create_overlay() {
 	cp_ch "$TMPDIR"/$OVERLAY_ZIP_FILE "$MODPATH"/common
 	unzip -qo "$MODPATH"/common/$OVERLAY_ZIP_FILE -d "$MODPATH"/common >&2
-	aapt p -f -v -M "$MODPATH"/common/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay/res -F "$MODPATH"/unsigned.apk >&2
+	aapt p -fvM "$MODPATH"/common/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay/res -F "$MODPATH"/unsigned.apk >&2
 }
 sign_framework_res() {
 	sign "$MODPATH"/unsigned.apk "$MODPATH"/signed.apk
-	cp_ch "$MODPATH"/signed.apk "$MODPATH"/common/$OVERLAY_APK_FILE
+	mv -f "$MODPATH"/signed.apk "$MODPATH"/common/$OVERLAY_APK_FILE
 }
 find_overlay_path() {
-	if [ -d /system_ext/overlay ]; then
+	if [[ -d /system_ext/overlay ]]; then
 		OVERLAY_PATH=system/system_ext/overlay/
-	elif [ -d /product/overlay ]; then
+	elif [[ -d /product/overlay ]]; then
 		OVERLAY_PATH=system/product/overlay/
-	elif [ -d /vendor/overlay ]; then
+	elif [[ -d /vendor/overlay ]]; then
 		OVERLAY_PATH=system/vendor/overlay/
-	elif [ -d /system/overlay ]; then
+	elif [[ -d /system/overlay ]]; then
 		OVERLAY_PATH=system/overlay/
 	else
-		STATUS=0
+		clean_up 1
 	fi
 }
 force_overlay() {
@@ -118,98 +145,100 @@ force_overlay() {
 	fi
 }
 clean_up() {
-	if [ $1 -eq 1 ]; then
-		ui_print "  Cleaning up..."
-		rm -rf "$MODPATH"/common/$OVERLAY_ZIP_FILE
-		rm -rf "$MODPATH"/signed.apk "$MODPATH"/unsigned.apk
-		ui_print "  !!! Dalvik cache will be cleared next boot."
-		ui_print "  !!! Boot time may be longer."
-	else
+	if [[ $1 -eq 1 ]]; then
 		ui_print ""
 		abort "  Aborting..."
 	fi
+
+	ui_print "  Cleaning up..."
+	rm -rf "$MODPATH"/common/$OVERLAY_ZIP_FILE
+	ui_print "  !!! Dalvik cache will be cleared next boot."
+	ui_print "  !!! Boot time may be longer."
 }
 
-if [ ! "$BOOTMODE" ]; then
-	ui_print "  Installing through recovery NOT supported"
-	ui_print "  Intsall this module via Magisk Manager"
-	STATUS=0
-	clean_up $STATUS
+if [[ ! $BOOTMODE ]]; then
+	ui_print "  Installing through recovery NOT supported!"
+	ui_print "  Install this module via Magisk Manager"
+	clean_up 1
 fi
 
-if [ $API -ge 29 ]; then
+if [[ $API -ge 29 ]]; then
 	OVERLAY_API=29
 fi
 
 ui_print "  Choose between:"
-ui_print "    Bromite, Mulch"
+if [[ $IS64BIT ]]; then
+	ui_print "    Bromite, Mulch, Vanadium"
+else
+	ui_print "    Bromite, Mulch"
+fi
 sleep 3
 ui_print ""
 ui_print "  Select:"
 ui_print "  -> Bromite [Vol+ = yes, Vol- = no]"
 if chooseport 3; then
 	bromite
-	NEXT_SELECTION=0
-fi
-if [ "${NEXT_SELECTION}" -eq 1 ]; then
+else
 	ui_print "  -> Mulch [Vol+ = yes, Vol- = no]"
 	if chooseport 3; then
 		mulch
-		NEXT_SELECTION=0
 	else
-		SKIP_INSTALLATION=1
+		if [[ $IS64BIT ]]; then
+			ui_print "  -> Vanadium [Vol+ = yes, Vol- = no]"
+			if chooseport 3; then
+				if [[ $ARCH = "arm64" ]]; then
+					vanadium "arm64"
+				else
+					vanadium "x86_64"
+				fi
+			else
+				SKIP_INSTALLATION=1
+			fi
+		else
+			SKIP_INSTALLATION=1
+		fi
 	fi
 fi
 
-if [ $SKIP_INSTALLATION -eq 0 ]; then
+if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	ui_print "  Detecting architecture..."
 	ui_print "  CPU architecture: ${ARCH}"
 	download_file webview.apk $VW_APK_URL
-	check_status
-	if [ ! -z "$VW_SHA_URL" ]; then
-		download_file $VW_SHA_FILE $VW_SHA_URL
-		check_status
+	if [[ ! -z $VW_SHA ]]; then
 		ui_print "  Checking integrity..."
-		check_integrity webview.apk $VW_SHA_FILE
+		check_integrity webview.apk $VW_SHA
 	fi
-
 	ui_print "  Installing webview..."
 	replace_old_webview
 	install_webview
 	download_file $OVERLAY_ZIP_FILE $VW_OVERLAY_URL
 	ui_print "  Creating overlay..."
 	create_overlay
-	if [ -f "${MODPATH}/unsigned.apk" ]; then
-		sign_framework_res
-	else
+	if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
 		ui_print ""
 		ui_print "  !!! Overlay creation has failed !!!"
 		ui_print "  Compatibility is unlikely, please report this to your ROM developer."
 		ui_print "  Some ROMs need a patch to fix this."
 		ui_print "  Do NOT report this issue to me."
-		ui_print ""
-		STATUS=0
-		clean_up $STATUS
+		clean_up 1
 	fi
+	sign_framework_res
 	find_overlay_path
-	if [ $STATUS -eq 1 ]; then
-		force_overlay
+	force_overlay
 
-		if [ ! -f "${MODPATH}/$OVERLAY_PATH$OVERLAY_APK_FILE" ]; then
-			STATUS=0
-		fi
-
-		if [ -f $CONFIG_FILE ]; then
-			rm -rf $CONFIG_FILE
-		fi
-		echo "RESET=1" >> $CONFIG_FILE
-		echo "OVERLAY_PATH=${OVERLAY_PATH}" >> $CONFIG_FILE
-		echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >> $CONFIG_FILE
-		echo "VW_PACKAGE=${VW_PACKAGE}" >> $CONFIG_FILE
-		echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >> $CONFIG_FILE
+	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
+		clean_up 1
 	fi
-else
-	ui_print "  Webview will not be replaced!"
-fi
 
-clean_up $STATUS
+	if [[ -f $CONFIG_FILE ]]; then
+		rm -rf $CONFIG_FILE
+	fi
+	echo "RESET=1" >>$CONFIG_FILE
+	echo "OVERLAY_PATH=${OVERLAY_PATH}" >>$CONFIG_FILE
+	echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >>$CONFIG_FILE
+	echo "VW_PACKAGE=${VW_PACKAGE}" >>$CONFIG_FILE
+	echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >>$CONFIG_FILE
+	clean_up 0
+else
+	abort "  Webview will not be replaced!"
+fi
