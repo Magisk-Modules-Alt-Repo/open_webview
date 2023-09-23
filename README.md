@@ -42,7 +42,7 @@ If you found this helpful, please consider supporting development with a [coffe]
 ## Credits
 
 - [MMT-Extended](https://github.com/Zackptg5/MMT-Extended) by [Zackptg5](https://github.com/Zackptg5)
-- [Bromite](https://github.com/bromite/bromite)
+- ~~[Bromite](https://github.com/bromite/bromite)~~
 - [GrapheneOS](https://grapheneos.org/)
 - [DivestOS](https://gitlab.com/divested-mobile)
 - [cUrl](https://github.com/curl/curl)
