@@ -1,5 +1,12 @@
 **If you found this helpful, please consider supporting development with a [coffe](https://www.paypal.me/f3ff0). Alternatively, you can contribute to the project by reporting bugs and doing PR. All support is appreciated!**
 
+# v2.2.0
+
+- Add Vanadium webview
+- Add SHA256 integrity check for Mulch
+- Get always last release of bromite
+- Bug fix
+
 # v2.1.0
 
 - Add Mulch webview

@@ -57,6 +57,13 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
+# v2.2.0
+
+- Add Vanadium webview
+- Add SHA256 integrity check for Mulch
+- Get always last release of bromite
+- Bug fix
+
 # v2.1.0
 
 - Add Mulch webview
