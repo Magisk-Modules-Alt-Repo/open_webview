@@ -57,6 +57,12 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
+# v2.3.0
+
+- Remove Bromite webview
+- Re-add overlay inside module
+- Add Android 14 support for Vanadium
+
 # v2.2.0
 
 - Add Vanadium webview
