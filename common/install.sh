@@ -1,5 +1,6 @@
 #!/system/bin/sh
 SKIP_INSTALLATION=0
+ANDROID_VANADIUM_VERSION=13
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 CONFIG_FILE="$MODPATH/.webview"
@@ -29,8 +30,8 @@ mulch() {
 	OVERLAY_ZIP_FILE="mulch-overlay${OVERLAY_API}.zip"
 }
 vanadium() {
-	VW_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeWebView.apk/raw?ref=13
-	VW_TRICHROME_LIB_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeLibrary.apk/raw?ref=13
+	VW_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeWebView.apk/raw?ref=${ANDROID_VANADIUM_VERSION}
+	VW_TRICHROME_LIB_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeLibrary.apk/raw?ref=${ANDROID_VANADIUM_VERSION}
 	# VW_SHA=$(get_sha_gitlab "40905333" "prebuilt%2F${1}%2FTrichromeWebView.apk?ref=13")
 	VW_SHA=""
 	VW_SYSTEM_PATH=system/app/VanadiumWebview
@@ -148,6 +149,10 @@ fi
 
 if [[ $API -ge 29 ]]; then
 	OVERLAY_API=29
+fi
+
+if [[ $API -ge 34 ]]; then
+	ANDROID_VANADIUM_VERSION=14
 fi
 
 ui_print "  Choose between:"
