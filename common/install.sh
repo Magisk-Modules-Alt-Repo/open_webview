@@ -2,7 +2,6 @@
 SKIP_INSTALLATION=0
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
-OVERLAY_ZIP_FILE="overlay.zip"
 CONFIG_FILE="$MODPATH/.webview"
 
 get_version_github() {
@@ -20,38 +19,24 @@ get_sha_gitlab() {
 		grep 'content_sha256:' |
 		cut -d":" -f2
 }
-get_bromite_sha() {
-	curl -kLs "https://github.com/bromite/bromite/releases/download/$1/brm_$1.sha256.txt" |
-		awk -v val="${ARCH}_SystemWebView.apk" '$2 == val {print $1}'
-}
-bromite() {
-	tag_name_bormite=$(get_version_github "bromite/bromite")
-	VW_APK_URL=https://github.com/bromite/bromite/releases/download/${tag_name_bormite}/${ARCH}_SystemWebView.apk
-	VW_TRICHROME_LIB_URL=""
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/vanadium-webview/overlays/bromite-overlay${OVERLAY_API}.zip
-	VW_SHA=$(get_bromite_sha $tag_name_bormite)
-	VW_SYSTEM_PATH=system/app/BromiteWebview
-	VW_PACKAGE="org.bromite.webview"
-	VW_OVERLAY_PACKAGE="org.Bromite.WebviewOverlay"
-}
 mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
 	VW_TRICHROME_LIB_URL=""
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/vanadium-webview/overlays/mulch-overlay${OVERLAY_API}.zip
 	VW_SHA=$(get_sha_gitlab_lfs "30111188" "prebuilt%2F${ARCH}%2Fwebview.apk/raw?ref=master")
 	VW_SYSTEM_PATH=system/app/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
 	VW_OVERLAY_PACKAGE="us.spotco.WebviewOverlay"
+	OVERLAY_ZIP_FILE="mulch-overlay${OVERLAY_API}.zip"
 }
 vanadium() {
 	VW_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeWebView.apk/raw?ref=13
 	VW_TRICHROME_LIB_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeLibrary.apk/raw?ref=13
-	VW_OVERLAY_URL=https://github.com/Magisk-Modules-Alt-Repo/open_webview/raw/vanadium-webview/overlays/vanadium-overlay${OVERLAY_API}.zip
 	# VW_SHA=$(get_sha_gitlab "40905333" "prebuilt%2F${1}%2FTrichromeWebView.apk?ref=13")
 	VW_SHA=""
 	VW_SYSTEM_PATH=system/app/VanadiumWebview
 	VW_PACKAGE="app.vanadium.webview"
 	VW_OVERLAY_PACKAGE="app.vanadium.WebviewOverlay"
+	OVERLAY_ZIP_FILE="vanadium-overlay${OVERLAY_API}.zip"
 }
 download_file() {
 	ui_print "  Downloading..."
@@ -111,9 +96,8 @@ install_webview() {
 	extract_lib
 }
 create_overlay() {
-	cp_ch "$TMPDIR"/$OVERLAY_ZIP_FILE "$MODPATH"/common
-	unzip -qo "$MODPATH"/common/$OVERLAY_ZIP_FILE -d "$MODPATH"/common >&2
-	aapt p -fvM "$MODPATH"/common/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/common/overlay/res -F "$MODPATH"/unsigned.apk >&2
+	unzip -qo "$MODPATH"/overlays/$OVERLAY_ZIP_FILE -d "$MODPATH"/overlays/overlay >&2
+	aapt p -fvM "$MODPATH"/overlays/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/overlays/overlay/res -F "$MODPATH"/unsigned.apk >&2
 }
 sign_framework_res() {
 	sign "$MODPATH"/unsigned.apk "$MODPATH"/signed.apk
@@ -151,7 +135,7 @@ clean_up() {
 	fi
 
 	ui_print "  Cleaning up..."
-	rm -rf "$MODPATH"/common/$OVERLAY_ZIP_FILE
+	rm -rf "$MODPATH"/overlays/overlay
 	ui_print "  !!! Dalvik cache will be cleared next boot."
 	ui_print "  !!! Boot time may be longer."
 }
@@ -168,35 +152,30 @@ fi
 
 ui_print "  Choose between:"
 if [[ $IS64BIT ]]; then
-	ui_print "    Bromite, Mulch, Vanadium"
+	ui_print "    Mulch, Vanadium"
 else
-	ui_print "    Bromite, Mulch"
+	ui_print "    Mulch"
 fi
 sleep 3
 ui_print ""
-ui_print "  Select:"
-ui_print "  -> Bromite [Vol+ = yes, Vol- = no]"
+ui_print "  Select: [Vol+ = yes, Vol- = no]"
+ui_print "  -> Mulch"
 if chooseport 3; then
-	bromite
+	mulch
 else
-	ui_print "  -> Mulch [Vol+ = yes, Vol- = no]"
-	if chooseport 3; then
-		mulch
-	else
-		if [[ $IS64BIT ]]; then
-			ui_print "  -> Vanadium [Vol+ = yes, Vol- = no]"
-			if chooseport 3; then
-				if [[ $ARCH = "arm64" ]]; then
-					vanadium "arm64"
-				else
-					vanadium "x86_64"
-				fi
+	if [[ $IS64BIT ]]; then
+		ui_print "  -> Vanadium"
+		if chooseport 3; then
+			if [[ $ARCH = "arm64" ]]; then
+				vanadium "arm64"
 			else
-				SKIP_INSTALLATION=1
+				vanadium "x86_64"
 			fi
 		else
 			SKIP_INSTALLATION=1
 		fi
+	else
+		SKIP_INSTALLATION=1
 	fi
 fi
 
@@ -211,7 +190,6 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	ui_print "  Installing webview..."
 	replace_old_webview
 	install_webview
-	download_file $OVERLAY_ZIP_FILE $VW_OVERLAY_URL
 	ui_print "  Creating overlay..."
 	create_overlay
 	if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
