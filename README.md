@@ -30,7 +30,7 @@ If you found this helpful, please consider supporting development with a [coffe]
 
 - Works on any device running Android 8.0+ and Magisk 20.4+
 - Replace the webview with one of:
-    1. ~~[Bromite WebView](https://github.com/bromite/bromite) ~~ [Deprecated]
+    1. ~~[Bromite WebView](https://github.com/bromite/bromite)~~ [Deprecated]
     2. [Mulch](https://gitlab.com/divested-mobile/mulch)
     3. [Vanadium](https://gitlab.com/grapheneos/platform_external_vanadium)
 
