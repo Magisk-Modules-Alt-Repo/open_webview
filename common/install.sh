@@ -71,25 +71,33 @@ check_integrity() {
 	fi
 }
 replace_old_webview() {
-	for i in "com.android.chrome" "com.android.webview" "com.google.android.webview"; do
-		unsanitized_path=$(cmd package dump "$i" | grep codePath)
-		path=${unsanitized_path##*=}
-		if [[ -d $path ]]; then
-			mktouch "$MODPATH"$path/.replace
+	for i in "com.android.chrome" "com.android.webview" "com.google.android.webview" "org.mozilla.webview_shell"; do
+		local IS_OLD_WEBVIEW_INSTALLED OLD_WEBVIEW_PATH
+		IS_OLD_WEBVIEW_INSTALLED=$(cmd package dump "$i" | grep codePath)
+		if [[ -n $IS_OLD_WEBVIEW_INSTALLED ]]; then
+			ui_print "  Detecting webview: $i"
+			OLD_WEBVIEW_PATH=${IS_OLD_WEBVIEW_INSTALLED##*=}
+			ui_print "  Webview $OLD_WEBVIEW_PATH detected"
+			if [[ -d $OLD_WEBVIEW_PATH ]]; then
+				mktouch "$MODPATH"/$OLD_WEBVIEW_PATH/.replace
+			fi
 		fi
 	done
-}
-copy_webview_file() {
-	cp_ch "$TMPDIR"/webview.apk "$MODPATH"/$VW_SYSTEM_PATH/webview.apk
-	cp_ch "$TMPDIR"/webview.apk "$TMPDIR"/webview.zip
 }
 extract_lib() {
 	mkdir -p "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64 "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
 	cp -rf "$TMPDIR"/webview/lib/arm64-v8a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64
 	cp -rf "$TMPDIR"/webview/lib/armeabi-v7a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
 }
+copy_webview_file() {
+	cp_ch "$TMPDIR"/webview.apk "$MODPATH"/$VW_SYSTEM_PATH/webview.apk
+	cp_ch "$TMPDIR"/webview.apk "$TMPDIR"/webview.zip
+}
 install_webview() {
 	mktouch "$MODPATH"/$VW_SYSTEM_PATH/.replace
+	mkdir -p "$TMPDIR"/webview
+	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
+	extract_lib
 	copy_webview_file
 	if [[ ! -z $VW_TRICHROME_LIB_URL ]]; then
 		download_file trichrome.apk $VW_TRICHROME_LIB_URL
@@ -97,9 +105,6 @@ install_webview() {
 		su -c "pm install -r -t --user 0 ${TMPDIR}/trichrome.apk" >&2
 	fi
 	su -c "pm install -r -t --user 0 ${TMPDIR}/webview.apk" >&2
-	mkdir -p "$TMPDIR"/webview
-	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
-	extract_lib
 }
 create_overlay() {
 	unzip -qo "$MODPATH"/overlays/$OVERLAY_ZIP_FILE -d "$MODPATH"/overlays/overlay >&2
