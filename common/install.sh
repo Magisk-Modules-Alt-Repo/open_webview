@@ -105,15 +105,14 @@ sign_framework_res() {
 	mv -f "$MODPATH"/signed.apk "$MODPATH"/common/$OVERLAY_APK_FILE
 }
 find_overlay_path() {
-	if [[ -d /system_ext/overlay ]]; then
-		OVERLAY_PATH=system/system_ext/overlay/
-	elif [[ -d /product/overlay ]]; then
-		OVERLAY_PATH=system/product/overlay/
-	elif [[ -d /vendor/overlay ]]; then
-		OVERLAY_PATH=system/vendor/overlay/
+	if [[ -d /product/overlay ]]; then
+		OVERLAY_PATH="$MODPATH/product/overlay"
+	elif [[ -d /system_ext/overlay ]]; then
+		OVERLAY_PATH="$MODPATH/system_ext/overlay"
 	elif [[ -d /system/overlay ]]; then
-		OVERLAY_PATH=system/overlay/
+		OVERLAY_PATH="$MODPATH/system/overlay"
 	else
+		ui_print "Unable to find a correct overlay path."
 		clean_up 1
 	fi
 }
