@@ -116,6 +116,8 @@ find_overlay_path() {
 		OVERLAY_PATH=system/system_ext/overlay/
 	elif [[ -d /system/overlay ]]; then
 		OVERLAY_PATH=system/overlay/
+	elif [[ -d /system/vendor/overlay ]]; then
+		OVERLAY_PATH=system/vendor/overlay/
 	else
 		ui_print "  Unable to find a correct overlay path."
 		clean_up 1
