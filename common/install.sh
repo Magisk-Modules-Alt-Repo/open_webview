@@ -57,7 +57,12 @@ check_status() {
 	fi
 }
 check_integrity() {
-	SHA_FILE_CALCULATED=$(sha256sum $1 | awk '{print $1}')
+	if [ -f "/sbin/sha256sum" ]; then
+		SHA_FILE_CALCULATED=$(/sbin/sha256sum $1 | cut -d' ' -f1)
+	else
+		SHA_FILE_CALCULATED=$(sha256sum $1 | cut -d' ' -f1)
+	fi
+	
 	if [[ $SHA_FILE_CALCULATED = $2 ]]; then
 		ui_print "  Integrity checked!"
 	else
