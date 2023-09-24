@@ -111,13 +111,13 @@ sign_framework_res() {
 }
 find_overlay_path() {
 	if [[ -d /product/overlay ]]; then
-		OVERLAY_PATH="$MODPATH/product/overlay"
+		OVERLAY_PATH=system/product/overlay/
 	elif [[ -d /system_ext/overlay ]]; then
-		OVERLAY_PATH="$MODPATH/system_ext/overlay"
+		OVERLAY_PATH=system/system_ext/overlay/
 	elif [[ -d /system/overlay ]]; then
-		OVERLAY_PATH="$MODPATH/system/overlay"
+		OVERLAY_PATH=system/overlay/
 	else
-		ui_print "Unable to find a correct overlay path."
+		ui_print "  Unable to find a correct overlay path."
 		clean_up 1
 	fi
 }
@@ -214,6 +214,7 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	force_overlay
 
 	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
+		ui_print "  Missing overlay apk file"
 		clean_up 1
 	fi
 
