@@ -192,7 +192,7 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d $MODPATH >&2
 ui_print "  Initialization..."
 alias aapt='$MODPATH/common/tools/$ARCH/aapt'
 alias curl='$MODPATH/common/tools/$ARCH/curl --dns-servers 1.1.1.1,1.0.0.1'
-alias sign='$MODPATH/common/tools/zipsigner'
+alias sign='su -c $MODPATH/common/tools/zipsigner'
 # permission
 chmod -R 0755 "$MODPATH/common/tools/$ARCH"
 chmod 0755 "$MODPATH/common/tools/zipsigner"
