@@ -77,9 +77,9 @@ replace_old_webview() {
 		if [[ -n $IS_OLD_WEBVIEW_INSTALLED ]]; then
 			ui_print "  Detecting webview: $i"
 			OLD_WEBVIEW_PATH=${IS_OLD_WEBVIEW_INSTALLED##*=}
-			ui_print "  Webview $OLD_WEBVIEW_PATH detected"
-			if [[ -d $OLD_WEBVIEW_PATH ]]; then
-				mktouch "$MODPATH"/$OLD_WEBVIEW_PATH/.replace
+			if [[ ! -z $OLD_WEBVIEW_PATH ]]; then
+				ui_print "  Webview $OLD_WEBVIEW_PATH detected"
+				mktouch "$MODPATH"$OLD_WEBVIEW_PATH/.replace
 			fi
 		fi
 	done
