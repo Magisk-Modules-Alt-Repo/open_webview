@@ -179,7 +179,7 @@ ui_print "  -> Mulch"
 if chooseport 3; then
 	mulch
 else
-	if [[ $IS64BIT ]]; then
+	if [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
 		ui_print "  -> Vanadium"
 		if chooseport 3; then
 			if [[ $ARCH = "arm64" ]]; then
