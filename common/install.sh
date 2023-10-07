@@ -167,7 +167,7 @@ if [[ $API -ge 34 ]]; then
 fi
 
 ui_print "  Choose between:"
-if [[ $IS64BIT ]]; then
+if [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
 	ui_print "    Mulch, Vanadium"
 else
 	ui_print "    Mulch"
