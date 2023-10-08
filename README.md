@@ -1,4 +1,4 @@
-# Open WebView - [XDA Thread](https://forum.xda-developers.com/t/magisk-module-font-open-webview-1-0-0.4496119/)
+# Open WebView - [XDA Thread](https://xdaforums.com/t/magisk-module-webview-open-webview-2-3-0.4496119/)
 
 ![Open WebView](https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/open_webview/master/img/logo.png)
 
@@ -56,6 +56,11 @@ Copyright 2023 F3FFO
 The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-Alt-Repo/open_fonts/blob/master/LICENSE)
 
 ## Change logs
+
+# v2.3.1
+
+- KernelSU compatibility. Thanks to @amteza
+- Bug fix
 
 # v2.3.0
 
