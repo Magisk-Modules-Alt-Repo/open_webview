@@ -4,6 +4,7 @@ ANDROID_VANADIUM_VERSION=13
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 CONFIG_FILE="$MODPATH/.webview"
+LOG=/sdcard/open-webview/webview
 
 get_version_github() {
 	curl -kLs "https://api.github.com/repos/$1/releases/latest" |
@@ -41,6 +42,7 @@ vanadium() {
 }
 download_file() {
 	ui_print "  Downloading..."
+	echo "[$(date "+%H:%M:%S")] Downloading file: $1 from source: $2" >> $LOG
 
 	curl -skL "$2" -o "$TMPDIR"/$1
 
@@ -50,27 +52,37 @@ download_file() {
 }
 check_status() {
 	if [[ $1 -eq 0 ]]; then
+		echo "[$(date "+%H:%M:%S")] File not downloaded" >> $LOG
 		ui_print ""
 		ui_print "  !!! Dowload failed !!!"
 		ui_print ""
 		clean_up $1
 	fi
+	echo "[$(date "+%H:%M:%S")] File downloaded" >> $LOG
 }
 check_integrity() {
 	if [ -f "/sbin/sha256sum" ]; then
+		echo "[$(date "+%H:%M:%S")] SHA256SUM calculated with magisk lib" >> $LOG
 		SHA_FILE_CALCULATED=$(/sbin/sha256sum $1 | cut -d' ' -f1)
 	else
+		echo "[$(date "+%H:%M:%S")] SHA256SUM calculated with system native lib" >> $LOG
 		SHA_FILE_CALCULATED=$(sha256sum $1 | cut -d' ' -f1)
 	fi
 	
+	echo "[$(date "+%H:%M:%S")] SHA256SUM calculated: $SHA_FILE_CALCULATED" >> $LOG
+	echo "[$(date "+%H:%M:%S")] SHA256SUM from file: $2" >> $LOG
+
 	if [[ $SHA_FILE_CALCULATED = $2 ]]; then
+		echo "[$(date "+%H:%M:%S")] Integrity checked" >> $LOG
 		ui_print "  Integrity checked!"
 	else
+		echo "[$(date "+%H:%M:%S")] Integrity not checked" >> $LOG
 		ui_print "  Integrity not checked!"
 		clean_up 1
 	fi
 }
 replace_old_webview() {
+	echo "[$(date "+%H:%M:%S")] Exclude installed package that can create conflict" >> $LOG
 	for i in "com.android.chrome" "com.android.webview" "com.google.android.webview" "org.mozilla.webview_shell"; do
 		local IS_OLD_WEBVIEW_INSTALLED OLD_WEBVIEW_PATH
 		IS_OLD_WEBVIEW_INSTALLED=$(cmd package dump "$i" | grep codePath)
@@ -78,6 +90,7 @@ replace_old_webview() {
 			ui_print "  Detecting webview: $i"
 			OLD_WEBVIEW_PATH=${IS_OLD_WEBVIEW_INSTALLED##*=}
 			if [[ ! -z $OLD_WEBVIEW_PATH ]]; then
+				echo "[$(date "+%H:%M:%S")] Webview replaced: $OLD_WEBVIEW_PATH" >> $LOG
 				ui_print "  Webview $OLD_WEBVIEW_PATH detected"
 				mktouch "$MODPATH"$OLD_WEBVIEW_PATH/.replace
 			fi
@@ -85,15 +98,18 @@ replace_old_webview() {
 	done
 }
 extract_lib() {
+	echo "[$(date "+%H:%M:%S")] Extracting lib from download webview as zip" >> $LOG
 	mkdir -p "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64 "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
 	cp -rf "$TMPDIR"/webview/lib/arm64-v8a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm64
 	cp -rf "$TMPDIR"/webview/lib/armeabi-v7a/* "$MODPATH"/$VW_SYSTEM_PATH/lib/arm
 }
 copy_webview_file() {
+	echo "[$(date "+%H:%M:%S")] Copy webview.apk from: $TMPDIR  -  to: $VW_SYSTEM_PATH" >> $LOG
 	cp_ch "$TMPDIR"/webview.apk "$MODPATH"/$VW_SYSTEM_PATH/webview.apk
 	cp_ch "$TMPDIR"/webview.apk "$TMPDIR"/webview.zip
 }
 install_webview() {
+	echo "[$(date "+%H:%M:%S")] Installing webview" >> $LOG
 	mktouch "$MODPATH"/$VW_SYSTEM_PATH/.replace
 	mkdir -p "$TMPDIR"/webview
 	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
@@ -107,14 +123,17 @@ install_webview() {
 	su -c "pm install -r -t --user 0 ${TMPDIR}/webview.apk" >&2
 }
 create_overlay() {
+	echo "[$(date "+%H:%M:%S")] Creating overlay" >> $LOG
 	unzip -qo "$MODPATH"/overlays/$OVERLAY_ZIP_FILE -d "$MODPATH"/overlays/overlay >&2
 	aapt p -fvM "$MODPATH"/overlays/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/overlays/overlay/res -F "$MODPATH"/unsigned.apk >&2
 }
 sign_framework_res() {
+	echo "[$(date "+%H:%M:%S")] Sign modified framework-res" >> $LOG
 	sign "$MODPATH"/unsigned.apk "$MODPATH"/signed.apk
 	mv -f "$MODPATH"/signed.apk "$MODPATH"/common/$OVERLAY_APK_FILE
 }
 find_overlay_path() {
+	echo "[$(date "+%H:%M:%S")] Finding overlay path" >> $LOG
 	if [[ -d /product/overlay ]]; then
 		OVERLAY_PATH=system/product/overlay/
 	elif [[ -d /system_ext/overlay ]]; then
@@ -124,24 +143,31 @@ find_overlay_path() {
 	elif [[ -d /system/vendor/overlay ]]; then
 		OVERLAY_PATH=system/vendor/overlay/
 	else
+		echo "[$(date "+%H:%M:%S")] Unable to find overlay path" >> $LOG
 		ui_print "  Unable to find a correct overlay path."
 		clean_up 1
 	fi
+	echo "[$(date "+%H:%M:%S")] Overlay path: $OVERLAY_PATH" >> $LOG
 }
 force_overlay() {
+	echo "[$(date "+%H:%M:%S")] Forcing overlay" >> $LOG
 	mkdir -p "$MODPATH"/$OVERLAY_PATH
+	echo "[$(date "+%H:%M:%S")] Copy $OVERLAY_APK_FILE  -  to: $OVERLAY_PATH" >> $LOG
 	cp_ch "$MODPATH"/common/$OVERLAY_APK_FILE "$MODPATH"/$OVERLAY_PATH
 	if [[ -d "$MODPATH"/product ]]; then
 		if [[ -d "$MODPATH"/system/product ]]; then
+			echo "[$(date "+%H:%M:%S")] Using /system/product as overlay path" >> $LOG
 			cp -rf "$MODPATH"/product/* "$MODPATH"/system/product/
 			rm -rf "$MODPATH"/product/
 		else
+			echo "[$(date "+%H:%M:%S")] Moving from /product to /system" >> $LOG
 			mv "$MODPATH"/product/ "$MODPATH"/system/
 		fi
 	fi
 }
 clean_up() {
 	if [[ $1 -eq 1 ]]; then
+		echo "[$(date "+%H:%M:%S")] Abort installation" >> $LOG
 		ui_print ""
 		abort "  Aborting..."
 	fi
@@ -150,9 +176,21 @@ clean_up() {
 	rm -rf "$MODPATH"/overlays/overlay
 	ui_print "  !!! Dalvik cache will be cleared next boot."
 	ui_print "  !!! Boot time may be longer."
+	echo "[$(date "+%H:%M:%S")] Installation success" >> $LOG
 }
 
+echo "# open-webview v2.3.1" > $LOG
+echo -e "# Author: @f3ffo (Github)\n" >> $LOG
+echo "[$(date "+%H:%M:%S")] Brand: $(getprop ro.product.system.brand)" >> $LOG
+echo "[$(date "+%H:%M:%S")] Device: $(getprop ro.product.system.device)" >> $LOG
+echo "[$(date "+%H:%M:%S")] Manufacter: $(getprop ro.product.system.manufacter)" >> $LOG
+echo "[$(date "+%H:%M:%S")] Model: $(getprop ro.product.system.model)" >> $LOG
+echo "[$(date "+%H:%M:%S")] Arch: $ARCH" >> $LOG
+echo "[$(date "+%H:%M:%S")] System name: $(getprop ro.product.system.name)" >> $LOG
+echo -e "[$(date "+%H:%M:%S")] Android Version: $(getprop ro.system.build.version.release)\n" >> $LOG
+
 if [[ ! $BOOTMODE ]]; then
+	echo "[$(date "+%H:%M:%S")] Installing through recovery" >> $LOG
 	ui_print "  Installing through recovery NOT supported!"
 	ui_print "  Install this module via Magisk Manager"
 	clean_up 1
@@ -177,14 +215,17 @@ ui_print ""
 ui_print "  Select: [Vol+ = yes, Vol- = no]"
 ui_print "  -> Mulch"
 if chooseport 3; then
+	echo "[$(date "+%H:%M:%S")] Select mulch" >> $LOG
 	mulch
 else
 	if [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
 		ui_print "  -> Vanadium"
 		if chooseport 3; then
 			if [[ $ARCH = "arm64" ]]; then
+				echo "[$(date "+%H:%M:%S")] Select vanadium for arm64" >> $LOG
 				vanadium "arm64"
 			else
+				echo "[$(date "+%H:%M:%S")] Select vanadium for x86_64" >> $LOG
 				vanadium "x86_64"
 			fi
 		else
@@ -196,7 +237,6 @@ else
 fi
 
 if [[ $SKIP_INSTALLATION -eq 0 ]]; then
-	ui_print "  Detecting architecture..."
 	ui_print "  CPU architecture: ${ARCH}"
 	download_file webview.apk $VW_APK_URL
 	if [[ ! -z $VW_SHA ]]; then
@@ -221,11 +261,13 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	force_overlay
 
 	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
+		echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >> $LOG
 		ui_print "  Missing overlay apk file"
 		clean_up 1
 	fi
 
 	if [[ -f $CONFIG_FILE ]]; then
+		echo "[$(date "+%H:%M:%S")] Removing old config file" >> $LOG
 		rm -rf $CONFIG_FILE
 	fi
 	echo "RESET=1" >>$CONFIG_FILE
@@ -235,5 +277,6 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >>$CONFIG_FILE
 	clean_up 0
 else
+	echo "[$(date "+%H:%M:%S")] Aborting installation" >> $LOG
 	abort "  Webview will not be replaced!"
 fi
