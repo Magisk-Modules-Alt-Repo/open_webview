@@ -65,7 +65,7 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 # v2.3.1
 
-- KernelSU compatibility (Shell must have SuperUser enabled). Thanks to @amteza
+- KernelSU compatibility (Shell must have SuperUser enabled). Thanks to [@amteza](https://github.com/amteza)
 - Bug fix
 
 # v2.3.0
