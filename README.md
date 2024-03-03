@@ -31,6 +31,8 @@ If you found this helpful, please consider supporting development with a [coffe]
 
 ## Features
 
+**ATTENTION!** This module cannot automatically update the webview, so if you want to update a webview installed through this module you must manually reinstall the module.
+
 - Works on any device running Android 8.0+ and Magisk 20.4+
 - Replace the webview with one of:
     1. ~~[Bromite WebView](https://github.com/bromite/bromite)~~ [Deprecated]
