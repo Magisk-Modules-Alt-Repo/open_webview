@@ -4,14 +4,14 @@
 
 This module helps you to replace your system webview though Magisk.
 
->**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:
-- download from sources the latest version of the webview you have choosen during module installation
-- install it
+>~~**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:~~
+- ~~download from sources the latest version of the webview you have choosen during module installation~~
+- ~~install it~~
 
 ## DISCLAIMER
 
 Before flash module, please read below:
->I AM NOT RESPONSIBLE SOME YOUR FEATURE FROM YOUR DEVICE IF DOESN'T WORK PROPERLY. BEFORE FLASH THE MODULE, PLEASE READ LINE CODES AND SELECT GOOGLE SERVICES YOU NEEDS. YOU ARE FLASHING THIS MAGISK MODULE AND ITS YOUR CHOICE TO DO IT OR NOT TO DO IT AND YOU'RE THE ONE DOING IT. I JUST WANT TO HELP OTHERS OUT.
+>I AM NOT RESPONSIBLE IF YOUR DEVICE DOES NOT WORK PROPERLY. BEFORE FLASHING THE MODULE, PLEASE READ THE CODE. YOU WHO DECIDE TO INSTALL THIS MODULE ASSUME ALL RESPONSIBILITY FOR ANY PROBLEMS.
 
 ## Compatibility
 
