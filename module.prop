@@ -1,10 +1,10 @@
 id=open_webview
 name=Open Webview
-version=2.3.1
-versionCode=231
+version=2.4.0
+versionCode=240
 author=F3FFO
 description=Open Webview change your system webview
 minMagisk=20400
 updateJson=https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/open_webview/master/update.json
-support=https://xdaforums.com/t/magisk-module-webview-open-webview-2-3-0.4496119/
+support=https://xdaforums.com/t/magisk-module-webview-open-webview.4496119/
 donate=https://www.paypal.me/f3ff0

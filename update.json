@@ -1,6 +1,6 @@
 {
-  "version": "v2.3.1",
-  "versionCode": 231,
-  "zipUrl": "https://github.com/Magisk-Modules-Alt-Repo/open_webview/releases/download/v2.3.1/open-webview.zip",
+  "version": "v2.4.0",
+  "versionCode": 240,
+  "zipUrl": "https://github.com/Magisk-Modules-Alt-Repo/open_webview/releases/download/v2.4.0/open-webview.zip",
   "changelog": "https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/open_webview/master/CHANGELOG.md"
 }

@@ -1,4 +1,4 @@
-# Open WebView - [XDA Thread](https://xdaforums.com/t/magisk-module-webview-open-webview-2-3-0.4496119/)
+# Open WebView - [XDA Thread](https://xdaforums.com/t/magisk-module-webview-open-webview.4496119/)
 
 ![Open WebView](https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/open_webview/master/img/logo.png)
 
@@ -66,47 +66,13 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
-# v2.3.1
+# v2.4.0
 
-- KernelSU compatibility (Shell must have SuperUser enabled). Thanks to [@amteza](https://github.com/amteza)
+- Welcome to Thorium webview
+- Mark as **experimental** Vanadium and Thorium
+- Add manual installation of Mulch webview
+- No need anymore to download thrichrome lib
+- Prevent to perform user installation of webview
 - Bug fix
 
-# v2.3.0
-
-- Remove Bromite webview
-- Re-add overlay inside module
-- Add Android 14 support for Vanadium
-
-# v2.2.0
-
-- Add Vanadium webview
-- Add SHA256 integrity check for Mulch
-- Get always last release of bromite
-- Bug fix
-
-# v2.1.0
-
-- Add Mulch webview
-- Add status in the module description
-- Update bromite to v108.0.5359.156
-- Bug fix
-
-# v2.0.0
-
-- Reworked the installation logic
-- Add cleaning logic for dalvik cache
-- Update bromite to v106.0.5249.163
-- Bug fix
-
-# v1.1.0
-
-- Add curl binary
-- Bug fix
-
-# v1.0.1
-
-- Bug fix
-
-# v1.0.0
-
-- Initial release
+See older release notes: [CHANGELOG.md](CHANGELOG.md)
