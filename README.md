@@ -5,8 +5,8 @@
 This module helps you to replace your system webview though Magisk.
 
 >~~**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:~~
-- ~~download from sources the latest version of the webview you have choosen during module installation~~
-- ~~install it~~
+> - ~~download from sources the latest version of the webview you have choosen during module installation~~
+> - ~~install it~~
 
 ## DISCLAIMER
 
