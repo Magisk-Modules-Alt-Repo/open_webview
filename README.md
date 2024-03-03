@@ -10,8 +10,7 @@ This module helps you to replace your system webview though Magisk.
 
 ## DISCLAIMER
 
-Before flash module, please read below:
->I AM NOT RESPONSIBLE IF YOUR DEVICE DOES NOT WORK PROPERLY. BEFORE FLASHING THE MODULE, PLEASE READ THE CODE. YOU WHO DECIDE TO INSTALL THIS MODULE ASSUME ALL RESPONSIBILITY FOR ANY PROBLEMS.
+>I AM NOT RESPONSIBLE IF YOUR DEVICE DOES NOT WORK PROPERLY OR FOR ANY DAMAGE THAT MAY OCCUR TO YOUR DEVICE. BEFORE USING THIS MODULE, PLEASE READ THE CODE. YOU WHO DECIDE TO INSTALL THIS MODULE ASSUMES ALL RESPONSIBILITY FOR ANY PROBLEMS.
 
 ## Compatibility
 
@@ -39,12 +38,12 @@ If you found this helpful, please consider supporting development with a [coffe]
     3. [Vanadium](https://gitlab.com/grapheneos/platform_external_vanadium)
     4. [Thorium](https://github.com/Alex313031/Thorium-Android)
 
-## Compile
+## Create module
 
-- Clone the repository
-- Run the script according to the OS:
-  - Unix/Linux: `./create-module.sh`
-  - Windows: `./create-module.ps1`
+1. Clone the repository
+2. Run the script according to the OS:
+   - Unix/Linux: `./create-module.sh`
+   - Windows: `./create-module.ps1`
 
 ## Credits
 
