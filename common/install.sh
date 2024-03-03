@@ -3,6 +3,7 @@ SKIP_INSTALLATION=0
 ANDROID_VANADIUM_VERSION=13
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
+IS_REINSTALL=0
 CONFIG_FILE="$MODPATH"/.webview
 LOG="$MODPATH"/webview.log
 
@@ -174,6 +175,14 @@ force_overlay() {
 		fi
 	fi
 }
+create_config_file() {
+	echo "IS_REINSTALL=${IS_REINSTALL}" >>$CONFIG_FILE
+	echo "RESET=1" >>$CONFIG_FILE
+	echo "OVERLAY_PATH=${OVERLAY_PATH}" >>$CONFIG_FILE
+	echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >>$CONFIG_FILE
+	echo "VW_PACKAGE=${VW_PACKAGE}" >>$CONFIG_FILE
+	echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >>$CONFIG_FILE
+}
 clean_up() {
 	if [[ $1 -eq 1 ]]; then
 		echo "[$(date "+%H:%M:%S")] Abort installation" >>$LOG
@@ -213,6 +222,10 @@ if [[ $API -ge 34 ]]; then
 	ANDROID_VANADIUM_VERSION=14
 fi
 
+ui_print ""
+ui_print "  !!! ATTENTION !!!"
+ui_print "  Vanadium and Thorium installation are experimentals, so they may have problems."
+ui_print ""
 ui_print "  Choose between:"
 if [[ $API -ge 29 ]]; then
 	if [[ $IS64BIT ]]; then
@@ -263,9 +276,27 @@ if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $API -ge 29 ]]; then
 fi
 
 if [[ $SKIP_INSTALLATION -eq 0 ]]; then
-	ui_print "  CPU architecture: ${ARCH}"
-
-	download_install_webview
+	if [[ -f $CONFIG_FILE ]]; then
+		echo "[$(date "+%H:%M:%S")] Remove old config file" >>$LOG
+		rm -rf $CONFIG_FILE
+		IS_REINSTALL=1
+	fi
+	
+	if [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
+		ui_print ""
+		ui_print "  Do you want that this module download and install as system app the latest available webview?"
+		ui_print "  yes: The module will download latest Mulch webview available and install it as system app"
+		ui_print "  no: The module performs only the minimal steps that allow you to install any version of Mulch webview"
+		ui_print ""
+		ui_print "  Select: [Vol+ = yes, Vol- = no]"
+		if chooseport 5; then
+			ui_print "  CPU architecture: ${ARCH}"
+			download_install_webview
+		fi
+	else
+		ui_print "  CPU architecture: ${ARCH}"
+		download_install_webview
+	fi
 
 	create_overlay
 	if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
@@ -279,23 +310,13 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	sign_framework_res
 	find_overlay_path
 	force_overlay
-
 	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
 		echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
 		ui_print "  Missing overlay apk file"
 		clean_up 1
 	fi
 
-	if [[ -f $CONFIG_FILE ]]; then
-		echo "[$(date "+%H:%M:%S")] Remove old config file" >>$LOG
-		rm -rf $CONFIG_FILE
-	fi
-
-	echo "RESET=1" >>$CONFIG_FILE
-	echo "OVERLAY_PATH=${OVERLAY_PATH}" >>$CONFIG_FILE
-	echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >>$CONFIG_FILE
-	echo "VW_PACKAGE=${VW_PACKAGE}" >>$CONFIG_FILE
-	echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >>$CONFIG_FILE
+	create_config_file
 	clean_up 0
 else
 	echo "[$(date "+%H:%M:%S")] No webview selected" >>$LOG
