@@ -241,6 +241,7 @@ else
 fi
 
 if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
+	SKIP_INSTALLATION=0
 	ui_print "  -> Vanadium"
 	if chooseport 3; then
 		if [[ $ARCH = "arm64" ]]; then
@@ -256,6 +257,7 @@ if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
 fi
 
 if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $API -ge 29 ]]; then
+	SKIP_INSTALLATION=0
 	ui_print "  -> Thorium"
 	if chooseport 3; then
 		echo "[$(date "+%H:%M:%S")] Select thorium" >>$LOG
