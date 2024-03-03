@@ -136,7 +136,7 @@ download_install_webview() {
 	install_webview
 }
 create_overlay() {
-	echo "[$(date "+%H:%M:%S")] Creating overlay" >>$LOG
+	echo "[$(date "+%H:%M:%S")] Create overlay" >>$LOG
 	ui_print "  Creating overlay..."
 	unzip -qo "$MODPATH"/overlays/$OVERLAY_ZIP_FILE -d "$MODPATH"/overlays/overlay >&2
 	aapt p -fvM "$MODPATH"/overlays/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/overlays/overlay/res -F "$MODPATH"/unsigned.apk >&2
@@ -204,7 +204,7 @@ echo "[$(date "+%H:%M:%S")] System name: $(getprop ro.product.system.name)" >>$L
 echo -e "[$(date "+%H:%M:%S")] Android Version: $(getprop ro.system.build.version.release)\n" >>$LOG
 
 if [[ ! $BOOTMODE ]]; then
-	echo "[$(date "+%H:%M:%S")] Installing through recovery" >>$LOG
+	echo "[$(date "+%H:%M:%S")] Install through recovery" >>$LOG
 	ui_print "  Installing through recovery NOT supported!"
 	ui_print "  Install this module via Magisk Manager"
 	clean_up 1
