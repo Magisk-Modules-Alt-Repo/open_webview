@@ -4,7 +4,9 @@
 
 This module helps you to replace your system webview though Magisk.
 
->**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:<br/><br/>- go to fdroid and re-download the latest version<br/>- manually download the apk and install it
+>**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:
+- download from sources the latest version of the webview you have choosen during module installation
+- install it
 
 ## DISCLAIMER
 
@@ -20,6 +22,7 @@ Before flash module, please read below:
 
 - [LOS 19](https://lineageos.org/)
 - [LOS 20](https://lineageos.org/)
+- [crDroid 10.x](https://crdroid.net/)
 - And more...
 
 ## Support
@@ -33,6 +36,7 @@ If you found this helpful, please consider supporting development with a [coffe]
     1. ~~[Bromite WebView](https://github.com/bromite/bromite)~~ [Deprecated]
     2. [Mulch](https://gitlab.com/divested-mobile/mulch)
     3. [Vanadium](https://gitlab.com/grapheneos/platform_external_vanadium)
+    4. [Thorium](https://github.com/Alex313031/Thorium-Android)
 
 ## Compile
 
@@ -45,13 +49,14 @@ If you found this helpful, please consider supporting development with a [coffe]
 - ~~[Bromite](https://github.com/bromite/bromite)~~
 - [GrapheneOS](https://grapheneos.org/)
 - [DivestOS](https://gitlab.com/divested-mobile)
+- [Thorium by Alex313031](https://github.com/Alex313031/thorium)
 - [cUrl](https://github.com/curl/curl)
 - [cUrl binary](https://github.com/F3FFO/compile_zlib_openssl_curl_android)
 - [Zipsigner](https://github.com/Magisk-Modules-Repo/zipsigner) by [osm0sis](https://github.com/osm0sis)
 
 ## License
 
-Copyright 2023 F3FFO
+Copyright 2024 F3FFO
 
 The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-Alt-Repo/open_fonts/blob/master/LICENSE)
 
