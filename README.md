@@ -42,7 +42,9 @@ If you found this helpful, please consider supporting development with a [coffe]
 ## Compile
 
 - Clone the repository
-- Run the script: `./create-module.sh`
+- Run the script according to the OS:
+  - Unix/Linux: `./create-module.sh`
+  - Windows: `./create-module.ps1`
 
 ## Credits
 
