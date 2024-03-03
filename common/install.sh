@@ -219,40 +219,47 @@ if [[ $API -ge 34 ]]; then
 fi
 
 ui_print "  Choose between:"
-if [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
-	ui_print "    Mulch, Vanadium, Thorium"
+if [[ $API -ge 29 ]]; then
+	if [[ $IS64BIT ]]; then
+		ui_print "    Mulch, Vanadium, Thorium"
+	else
+		ui_print "    Mulch, Thorium"
+	fi
 else
 	ui_print "    Mulch"
 fi
 sleep 3
 ui_print ""
 ui_print "  Select: [Vol+ = yes, Vol- = no]"
+
 ui_print "  -> Mulch"
 if chooseport 3; then
 	echo "[$(date "+%H:%M:%S")] Select mulch" >>$LOG
 	mulch
 else
-	if [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
-		ui_print "  -> Vanadium"
-		if chooseport 3; then
-			if [[ $ARCH = "arm64" ]]; then
-				echo "[$(date "+%H:%M:%S")] Select vanadium for arm64" >>$LOG
-				vanadium "arm64"
-			else
-				echo "[$(date "+%H:%M:%S")] Select vanadium for x86_64" >>$LOG
-				vanadium "x86_64"
-			fi
+	SKIP_INSTALLATION=1
+fi
+
+if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
+	ui_print "  -> Vanadium"
+	if chooseport 3; then
+		if [[ $ARCH = "arm64" ]]; then
+			echo "[$(date "+%H:%M:%S")] Select vanadium for arm64" >>$LOG
+			vanadium "arm64"
 		else
-			SKIP_INSTALLATION=1
+			echo "[$(date "+%H:%M:%S")] Select vanadium for x86_64" >>$LOG
+			vanadium "x86_64"
 		fi
-	elif [[ $API -ge 29 ]]; then
-		ui_print "  -> Thorium"
-		if chooseport 3; then
-			echo "[$(date "+%H:%M:%S")] Select thorium" >>$LOG
-			thorium
-		else
-			SKIP_INSTALLATION=1
-		fi
+	else
+		SKIP_INSTALLATION=1
+	fi
+fi
+
+if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $API -ge 29 ]]; then
+	ui_print "  -> Thorium"
+	if chooseport 3; then
+		echo "[$(date "+%H:%M:%S")] Select thorium" >>$LOG
+		thorium
 	else
 		SKIP_INSTALLATION=1
 	fi
@@ -283,9 +290,10 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	fi
 
 	if [[ -f $CONFIG_FILE ]]; then
-		echo "[$(date "+%H:%M:%S")] Removing old config file" >>$LOG
+		echo "[$(date "+%H:%M:%S")] Remove old config file" >>$LOG
 		rm -rf $CONFIG_FILE
 	fi
+
 	echo "RESET=1" >>$CONFIG_FILE
 	echo "OVERLAY_PATH=${OVERLAY_PATH}" >>$CONFIG_FILE
 	echo "OVERLAY_APK_FILE=${OVERLAY_APK_FILE}" >>$CONFIG_FILE
@@ -293,6 +301,6 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	echo "VW_OVERLAY_PACKAGE=${VW_OVERLAY_PACKAGE}" >>$CONFIG_FILE
 	clean_up 0
 else
-	echo "[$(date "+%H:%M:%S")] Aborting installation" >>$LOG
-	abort "  Webview will not be replaced!"
+	echo "[$(date "+%H:%M:%S")] No webview selected" >>$LOG
+	abort "  No webview selected!"
 fi
