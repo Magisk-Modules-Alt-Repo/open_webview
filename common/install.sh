@@ -50,21 +50,16 @@ download_file() {
 	ui_print "  Downloading..."
 	echo "[$(date "+%H:%M:%S")] Downloading file: $1 from source: $2" >>$LOG
 
-	curl -skL "$2" -o "$TMPDIR"/$1
+	curl -skLf "$2" -o "$TMPDIR"/$1
 
 	if [[ ! -f "$TMPDIR"/$1 ]]; then
-		check_status 1
-	fi
-}
-check_status() {
-	if [[ $1 -eq 0 ]]; then
-		echo "[$(date "+%H:%M:%S")] File not downloaded" >>$LOG
+		echo "[$(date "+%H:%M:%S")] Dowload failed" >>$LOG
 		ui_print ""
 		ui_print "  !!! Dowload failed !!!"
 		ui_print ""
-		clean_up $1
+		clean_up 1
 	fi
-	echo "[$(date "+%H:%M:%S")] File downloaded" >>$LOG
+	echo "[$(date "+%H:%M:%S")] File downloaded: $TMPDIR/$1" >>$LOG
 }
 check_integrity() {
 	if [ -f "/sbin/sha256sum" ]; then
