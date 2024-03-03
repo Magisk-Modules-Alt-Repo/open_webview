@@ -3,8 +3,8 @@ SKIP_INSTALLATION=0
 ANDROID_VANADIUM_VERSION=13
 OVERLAY_API=28
 OVERLAY_APK_FILE="WebviewOverlay.apk"
-CONFIG_FILE="$MODPATH/.webview"
-LOG=/sdcard/open-webview/webview
+CONFIG_FILE="$MODPATH"/.webview
+LOG="$MODPATH"/webview.log
 
 get_version_github() {
 	curl -kLs "https://api.github.com/repos/$1/releases/latest" |
