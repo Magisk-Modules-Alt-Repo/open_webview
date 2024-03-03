@@ -17,6 +17,7 @@ Before flash module, please read below:
 
 - Android 8+
 - Magisk 20.4+
+- KernelSU 0.6+
 
 ## Tested Device
 
@@ -64,7 +65,7 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 # v2.3.1
 
-- KernelSU compatibility. Thanks to @amteza
+- KernelSU compatibility (Shell must have SuperUser enabled). Thanks to @amteza
 - Bug fix
 
 # v2.3.0
