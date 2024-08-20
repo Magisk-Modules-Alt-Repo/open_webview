@@ -284,7 +284,7 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	
 	if [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
 		ui_print ""
-		ui_print "  Do you want that this module download and install as system app the latest available webview?"
+		ui_print "  Do you want this module to download and install the latest available webview as a system app?"
 		ui_print "  yes: The module will download latest Mulch webview available and install it as system app"
 		ui_print "  no: The module performs only the minimal steps that allow you to install any version of Mulch webview"
 		ui_print ""
