@@ -190,7 +190,7 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d $MODPATH >&2
 [ -f "$MODPATH/common/tools/tools.tar.xz" ] && tar -xvf $MODPATH/common/tools/tools.tar.xz -C $MODPATH/common/tools >/dev/null
 # alias
 ui_print "  Initialization..."
-alias aapt='$MODPATH/common/tools/$ARCH/aapt'
+alias aapt2='$MODPATH/common/tools/$ARCH/aapt2'
 alias curl='$MODPATH/common/tools/$ARCH/curl --dns-servers 1.1.1.1,1.0.0.1'
 alias sign='su -c $MODPATH/common/tools/zipsigner'
 # permission
