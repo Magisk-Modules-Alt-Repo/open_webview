@@ -8,9 +8,18 @@ CONFIG_FILE="$MODPATH"/.webview
 LOG="$MODPATH"/webview.log
 
 get_version_github() {
-	curl -kLs "https://api.github.com/repos/$1/releases/latest" |
-		grep '"tag_name":' |
-		sed -E 's/.*"(.*)".*/\1/'
+	local repo=$1
+    local asset_name=$2
+
+	echo "[$(date "+%H:%M:%S")] Get correct github versione using repo=${repo} and asset_name=${asset_name}" >>$LOG
+
+	curl -s "https://api.github.com/repos/$repo/releases" | \
+    awk -v asset_name="$asset_name" '
+        BEGIN { tag_name = "" }
+        /"tag_name":/ { tag_name = $2; gsub(/"|,/, "", tag_name) }
+        /"name":/ { name = $2; gsub(/"|,/, "", name) }
+        name == asset_name { print tag_name; exit }
+    '
 }
 get_sha_gitlab_lfs() {
 	curl -kLs "https://gitlab.com/api/v4/projects/$1/repository/files/$2" |
@@ -42,7 +51,7 @@ vanadium() {
 	OVERLAY_ZIP_FILE="vanadium-overlay${OVERLAY_API}.zip"
 }
 thorium() {
-	VW_APK_URL=https://github.com/Alex313031/Thorium-Android/releases/download/$(get_version_github "Alex313031/Thorium-Android")/SystemWebView_${ARCH}.apk
+	VW_APK_URL=https://github.com/Alex313031/Thorium-Android/releases/download/$(get_version_github "Alex313031/Thorium-Android" "SystemWebView_${ARCH}.apk")/SystemWebView_${ARCH}.apk
 	VW_TRICHROME_APK_URL=""
 	VW_SHA=""
 	VW_SYSTEM_PATH=system/app/ThoriumWebview
