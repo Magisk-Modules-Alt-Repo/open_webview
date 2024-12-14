@@ -86,7 +86,7 @@ check_integrity() {
 replace_old_webview() {
 	echo "[$(date "+%H:%M:%S")] Exclude installed package that can create conflict" >>$LOG
 	ui_print "  Excluding installed package that can create conflict..."
-	for i in "com.android.chrome" "com.android.webview" "com.google.android.webview" "org.mozilla.webview_shell"; do
+	for i in "com.android.chrome" "com.android.webview" "com.google.android.webview" "org.mozilla.webview_shell" "com.sec.android.app.chromecustomizations" "com.google.android.trichromelibrary"; do
 		local IS_OLD_WEBVIEW_INSTALLED OLD_WEBVIEW_PATH
 		IS_OLD_WEBVIEW_INSTALLED=$(cmd package dump "$i" | grep codePath)
 		if [[ -n $IS_OLD_WEBVIEW_INSTALLED ]]; then
