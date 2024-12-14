@@ -24,6 +24,7 @@ get_sha_gitlab() {
 }
 mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
+	VW_TRICHROME_APK_URL=""
 	VW_SHA=$(get_sha_gitlab_lfs "30111188" "prebuilt%2F${ARCH}%2Fwebview.apk/raw?ref=master")
 	VW_SYSTEM_PATH=system/app/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
@@ -32,6 +33,7 @@ mulch() {
 }
 vanadium() {
 	VW_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeWebView.apk/raw?ref=${ANDROID_VANADIUM_VERSION}
+	VW_TRICHROME_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeLibrary.apk/raw?ref=${ANDROID_VANADIUM_VERSION}
 	# VW_SHA=$(get_sha_gitlab "40905333" "prebuilt%2F${1}%2FTrichromeWebView.apk?ref=${ANDROID_VANADIUM_VERSION}")
 	VW_SHA=""
 	VW_SYSTEM_PATH=system/app/VanadiumWebview
@@ -41,6 +43,7 @@ vanadium() {
 }
 thorium() {
 	VW_APK_URL=https://github.com/Alex313031/Thorium-Android/releases/download/$(get_version_github "Alex313031/Thorium-Android")/SystemWebView_${ARCH}.apk
+	VW_TRICHROME_APK_URL=""
 	VW_SHA=""
 	VW_SYSTEM_PATH=system/app/ThoriumWebview
 	VW_PACKAGE="com.thorium.webview"
@@ -117,13 +120,19 @@ install_webview() {
 	echo "[$(date "+%H:%M:%S")] Install webview" >>$LOG
 	ui_print "  Installing webview..."
 	mktouch "$MODPATH"/$VW_SYSTEM_PATH/.replace
-	mkdir -p "$TMPDIR"/webview
 	copy_webview_file
+	su -c pm install --install-location 1 trichrome.apk
+	mkdir -p "$TMPDIR"/webview
 	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
 	extract_lib
 }
 download_install_webview() {
 	download_file webview.apk $VW_APK_URL
+
+	if [[ ! -z $VW_TRICHROME_APK_URL ]]; then
+		download_file trichrome.apk $VW_TRICHROME_APK_URL
+	fi
+
 	if [[ ! -z $VW_SHA ]]; then
 		ui_print "  Checking integrity..."
 		check_integrity webview.apk $VW_SHA
@@ -219,8 +228,12 @@ if [[ $API -ge 29 ]]; then
 	OVERLAY_API=29
 fi
 
-if [[ $API -ge 34 ]]; then
+if [[ $API -eq 33 ]]; then
+	ANDROID_VANADIUM_VERSION=13
+elif [[ $API -eq 34 ]]; then
 	ANDROID_VANADIUM_VERSION=14
+elif [[ $API -eq 35 ]]; then
+	ANDROID_VANADIUM_VERSION=15
 fi
 
 ui_print ""
