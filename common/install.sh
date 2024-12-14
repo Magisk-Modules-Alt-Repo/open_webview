@@ -187,6 +187,7 @@ clean_up() {
 	if [[ $1 -eq 1 ]]; then
 		echo "[$(date "+%H:%M:%S")] Abort installation" >>$LOG
 		ui_print ""
+		cp_ch $LOG /sdcard/
 		abort "  Aborting..."
 	fi
 
@@ -320,5 +321,6 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	clean_up 0
 else
 	echo "[$(date "+%H:%M:%S")] No webview selected" >>$LOG
-	abort "  No webview selected!"
+	ui_print "  No webview selected!"
+	clean_up 0	abort "  No webview selected!"
 fi
