@@ -353,5 +353,5 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 else
 	echo "[$(date "+%H:%M:%S")] No webview selected" >>$LOG
 	ui_print "  No webview selected!"
-	clean_up 0	abort "  No webview selected!"
+	clean_up 0
 fi
