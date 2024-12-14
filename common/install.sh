@@ -31,11 +31,20 @@ get_sha_gitlab() {
 		grep 'content_sha256:' |
 		cut -d":" -f2
 }
+get_system_path_according_to_rom() {
+	local is_los=$(getprop | grep -o -c "lineage")
+
+	if [[ $is_los -gt 0 ]]; then
+		echo "system/product/app"
+	else
+		echo "system/app"
+	fi
+}
 mulch() {
 	VW_APK_URL=https://gitlab.com/divested-mobile/mulch/-/raw/master/prebuilt/${ARCH}/webview.apk
 	VW_TRICHROME_APK_URL=""
 	VW_SHA=$(get_sha_gitlab_lfs "30111188" "prebuilt%2F${ARCH}%2Fwebview.apk/raw?ref=master")
-	VW_SYSTEM_PATH=system/app/MulchWebview
+	VW_SYSTEM_PATH=$(get_system_path_according_to_rom)/MulchWebview
 	VW_PACKAGE="us.spotco.mulch_wv"
 	VW_OVERLAY_PACKAGE="us.spotco.WebviewOverlay"
 	OVERLAY_ZIP_FILE="mulch-overlay${OVERLAY_API}.zip"
@@ -45,7 +54,7 @@ vanadium() {
 	VW_TRICHROME_APK_URL=https://gitlab.com/api/v4/projects/40905333/repository/files/prebuilt%2F${1}%2FTrichromeLibrary.apk/raw?ref=${ANDROID_VANADIUM_VERSION}
 	# VW_SHA=$(get_sha_gitlab "40905333" "prebuilt%2F${1}%2FTrichromeWebView.apk?ref=${ANDROID_VANADIUM_VERSION}")
 	VW_SHA=""
-	VW_SYSTEM_PATH=system/app/VanadiumWebview
+	VW_SYSTEM_PATH=$(get_system_path_according_to_rom)/VanadiumWebview
 	VW_PACKAGE="app.vanadium.webview"
 	VW_OVERLAY_PACKAGE="app.vanadium.WebviewOverlay"
 	OVERLAY_ZIP_FILE="vanadium-overlay${OVERLAY_API}.zip"
@@ -54,7 +63,7 @@ thorium() {
 	VW_APK_URL=https://github.com/Alex313031/Thorium-Android/releases/download/$(get_version_github "Alex313031/Thorium-Android" "SystemWebView_${ARCH}.apk")/SystemWebView_${ARCH}.apk
 	VW_TRICHROME_APK_URL=""
 	VW_SHA=""
-	VW_SYSTEM_PATH=system/app/ThoriumWebview
+	VW_SYSTEM_PATH=$(get_system_path_according_to_rom)/ThoriumWebview
 	VW_PACKAGE="com.thorium.webview"
 	VW_OVERLAY_PACKAGE="com.thorium.WebviewOverlay"
 	OVERLAY_ZIP_FILE="thorium-overlay${OVERLAY_API}.zip"
