@@ -1,4 +1,29 @@
 #!/system/bin/sh
+webviews=(
+    ".com.android.webview"
+    ".us.spotco.mulch_wv"
+    ".com.thorium.webview"
+    ".app.vanadium.webview"
+)
+
+webview_directory=""
+for file in "${webviews[@]}"; do
+    webview_directory=$(find /data/app/ -type d -name "*$file*" | head -n 1)
+    if [ -n "$webview_directory" ]; then
+        break
+    fi
+done
+
+if [ -n "$webview_directory" ]; then
+    rm -rf "$webview_directory"
+fi
+
+for directory in "${webviews[@]}"; do
+    if [ -d "/data/data/$directory" ]; then
+        rm -rf "/data/data/$directory"
+    fi
+done
+
 # Don't modify anything after this
 if [ -f $INFO ]; then
   while read LINE; do
