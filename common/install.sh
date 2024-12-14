@@ -68,6 +68,15 @@ thorium() {
 	VW_OVERLAY_PACKAGE="com.thorium.WebviewOverlay"
 	OVERLAY_ZIP_FILE="thorium-overlay${OVERLAY_API}.zip"
 }
+cromite() {
+	VW_APK_URL=https://github.com/uazo/cromite/releases/download/$(get_version_github "uazo/cromite" "${ARCH}_SystemWebView64.apk")/${ARCH}_SystemWebView64.apk
+	VW_TRICHROME_APK_URL=""
+	VW_SHA=""
+	VW_SYSTEM_PATH=""
+	VW_PACKAGE="cromite"
+	VW_OVERLAY_PACKAGE=""
+	OVERLAY_ZIP_FILE=""
+}
 download_file() {
 	ui_print "  Downloading..."
 	echo "[$(date "+%H:%M:%S")] Downloading file: $1 from source: $2" >>$LOG
@@ -139,7 +148,7 @@ install_webview() {
 	ui_print "  Installing webview..."
 	mktouch "$MODPATH"/$VW_SYSTEM_PATH/.replace
 	copy_webview_file
-	su -c pm install --install-location 1 trichrome.apk
+	su -c pm install --install-location 1 trichrome.apk  >&2
 	mkdir -p "$TMPDIR"/webview
 	unzip -qo "$TMPDIR"/webview.zip -d "$TMPDIR"/webview >&2
 	extract_lib
@@ -261,7 +270,7 @@ ui_print ""
 ui_print "  Choose between:"
 if [[ $API -ge 29 ]]; then
 	if [[ $IS64BIT ]]; then
-		ui_print "    Mulch, Vanadium, Thorium"
+		ui_print "    Mulch, Vanadium, Thorium, Cromite"
 	else
 		ui_print "    Mulch, Thorium"
 	fi
@@ -280,30 +289,44 @@ else
 	SKIP_INSTALLATION=1
 fi
 
-if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]] && [[ $API -ge 29 ]]; then
-	SKIP_INSTALLATION=0
-	ui_print "  -> Vanadium"
-	if chooseport 3; then
-		if [[ $ARCH = "arm64" ]]; then
-			echo "[$(date "+%H:%M:%S")] Select vanadium for arm64" >>$LOG
-			vanadium "arm64"
+if [[ $API -ge 33 ]]; then
+	if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]]; then
+		SKIP_INSTALLATION=0
+		ui_print "  -> Vanadium"
+		if chooseport 3; then
+			if [[ $ARCH = "arm64" ]]; then
+				echo "[$(date "+%H:%M:%S")] Select vanadium for arm64" >>$LOG
+				vanadium "arm64"
+			else
+				echo "[$(date "+%H:%M:%S")] Select vanadium for x86_64" >>$LOG
+				vanadium "x86_64"
+			fi
 		else
-			echo "[$(date "+%H:%M:%S")] Select vanadium for x86_64" >>$LOG
-			vanadium "x86_64"
+			SKIP_INSTALLATION=1
 		fi
-	else
-		SKIP_INSTALLATION=1
 	fi
 fi
+if [[ $API -ge 29 ]]; then
+	if [[ $SKIP_INSTALLATION -eq 1 ]]; then
+		SKIP_INSTALLATION=0
+		ui_print "  -> Thorium"
+		if chooseport 3; then
+			echo "[$(date "+%H:%M:%S")] Select thorium" >>$LOG
+			thorium
+		else
+			SKIP_INSTALLATION=1
+		fi
+	fi
 
-if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $API -ge 29 ]]; then
-	SKIP_INSTALLATION=0
-	ui_print "  -> Thorium"
-	if chooseport 3; then
-		echo "[$(date "+%H:%M:%S")] Select thorium" >>$LOG
-		thorium
-	else
-		SKIP_INSTALLATION=1
+	if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]]; then
+		SKIP_INSTALLATION=0
+		ui_print "  -> Cromite"
+		if chooseport 3; then
+			echo "[$(date "+%H:%M:%S")] Select cromite" >>$LOG
+			cromite
+		else
+			SKIP_INSTALLATION=1
+		fi
 	fi
 fi
 
@@ -314,38 +337,43 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 		IS_REINSTALL=1
 	fi
 	
-	if [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
-		ui_print ""
-		ui_print "  Do you want that this module download and install as system app the latest available webview?"
-		ui_print "  yes: The module will download latest Mulch webview available and install it as system app"
-		ui_print "  no: The module performs only the minimal steps that allow you to install any version of Mulch webview"
-		ui_print ""
-		ui_print "  Select: [Vol+ = yes, Vol- = no]"
-		if chooseport 5; then
+	if [[ $VW_PACKAGE == "cromite" ]]; then
+		download_file webview.apk $VW_APK_URL
+		su -c pm install --install-location 1 webview.apk  >&2
+	else
+		if [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
+			ui_print ""
+			ui_print "  Do you want that this module download and install as system app the latest available webview?"
+			ui_print "  yes: The module will download latest Mulch webview available and install it as system app"
+			ui_print "  no: The module performs only the minimal steps that allow you to install any version of Mulch webview"
+			ui_print ""
+			ui_print "  Select: [Vol+ = yes, Vol- = no]"
+			if chooseport 5; then
+				ui_print "  CPU architecture: ${ARCH}"
+				download_install_webview
+			fi
+		else
 			ui_print "  CPU architecture: ${ARCH}"
 			download_install_webview
 		fi
-	else
-		ui_print "  CPU architecture: ${ARCH}"
-		download_install_webview
-	fi
 
-	create_overlay
-	if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
-		ui_print ""
-		ui_print "  !!! Overlay creation has failed !!!"
-		ui_print "  Compatibility is unlikely, please report this to your ROM developer."
-		ui_print "  Some ROMs need a patch to fix this."
-		ui_print "  Do NOT report this issue to me."
-		clean_up 1
-	fi
-	sign_framework_res
-	find_overlay_path
-	force_overlay
-	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
-		echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
-		ui_print "  Missing overlay apk file"
-		clean_up 1
+		create_overlay
+		if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
+			ui_print ""
+			ui_print "  !!! Overlay creation has failed !!!"
+			ui_print "  Compatibility is unlikely, please report this to your ROM developer."
+			ui_print "  Some ROMs need a patch to fix this."
+			ui_print "  Do NOT report this issue to me."
+			clean_up 1
+		fi
+		sign_framework_res
+		find_overlay_path
+		force_overlay
+		if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
+			echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
+			ui_print "  Missing overlay apk file"
+			clean_up 1
+		fi
 	fi
 
 	create_config_file
