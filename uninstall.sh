@@ -2,7 +2,6 @@
 webviews=(
     ".com.android.webview"
     ".us.spotco.mulch_wv"
-    ".com.thorium.webview"
     ".app.vanadium.webview"
 )
 

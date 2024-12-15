@@ -34,7 +34,6 @@ cd "$OVERLAY_DIR"
 declare -A overlays=(
     ["mulch-overlay28.zip"]="./extracted/mulch-overlay28/*"
     ["mulch-overlay29.zip"]="./extracted/mulch-overlay29/*"
-    ["thorium-overlay29.zip"]="./extracted/thorium-overlay29/*"
     ["vanadium-overlay29.zip"]="./extracted/vanadium-overlay29/*"
 )
 
