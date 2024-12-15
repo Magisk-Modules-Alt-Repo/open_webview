@@ -5,7 +5,7 @@
 This module helps you to replace your system webview though Magisk.
 
 ## NOTICE
-> I don't have so much time to devote to this hobby, this is not my main job. If you appreciate my work please let me know with a star on github, or a feedback, or a PR to improve the code or a donation, thank you!
+> This for me is just a hobby that I do when I have some free time (very little). If you appreciate my work please let me know, thank you!
 
 >~~**ATTENTION!** There is a bug that still needs to be fixed where sometimes you may find that the installed webview doesn't work. To fix this bug you need to manually install the webview, to do this just:~~
 > - ~~download from sources the latest version of the webview you have choosen during module installation~~
@@ -25,12 +25,14 @@ This module helps you to replace your system webview though Magisk.
 
 - [LOS 19](https://lineageos.org/)
 - [LOS 20](https://lineageos.org/)
+- [LOS 21](https://lineageos.org/)
 - [crDroid 10.x](https://crdroid.net/)
 - And more...
 
 ## Support
 
-If you found this helpful, please consider supporting development with a [coffe](https://www.paypal.me/f3ff0). Alternatively, you can contribute to the project by reporting bugs and doing PR. All support is appreciated!
+If you find this project useful, please consider [supporting](https://www.paypal.me/f3ff0) the developer's mental health :)
+Alternatively, you can contribute directly to the project. All support is appreciated!
 
 ## Features
 
@@ -38,10 +40,23 @@ If you found this helpful, please consider supporting development with a [coffe]
 
 - Works on any device running Android 8.0+ and Magisk 20.4+
 - Replace the webview with one of:
-    1. ~~[Bromite WebView](https://github.com/bromite/bromite)~~ [Deprecated]
+    1. ~~[Bromite](https://github.com/bromite/bromite)~~ [Deprecated]
     2. [Mulch](https://gitlab.com/divested-mobile/mulch)
     3. [Vanadium](https://gitlab.com/grapheneos/platform_external_vanadium)
-    4. [Thorium](https://github.com/Alex313031/Thorium-Android)
+    4. ~~[Thorium](https://github.com/Alex313031/Thorium-Android)~~ [Deprecated]
+    5. [Cromite](https://github.com/uazo/cromite)
+
+### Why did I deprecate webview?
+
+In general because I no longer consider it adequate to my standard:
+- security reason
+- no more update for too long
+- no longer supported
+
+In my opinion a webview is a very important part of the system and I don't want to make the system vulnerable with an outdate webview
+
+- **Bromite** -> last update in 12/2022 (**Bromite**'s successor is **Cromite**)
+- **Thorium** -> I don't like the update policy, too long between two update
 
 ## Create module
 
@@ -52,14 +67,16 @@ If you found this helpful, please consider supporting development with a [coffe]
 
 ## Credits
 
-- [MMT-Extended](https://github.com/Zackptg5/MMT-Extended) by [Zackptg5](https://github.com/Zackptg5)
-- ~~[Bromite](https://github.com/bromite/bromite)~~
-- [GrapheneOS](https://grapheneos.org/)
-- [DivestOS](https://gitlab.com/divested-mobile)
+- [MMT-Extended by Zackptg5](https://github.com/Zackptg5/MMT-Extended)
+- [Bromite](https://github.com/bromite/bromite)
+- [Vanadium by GrapheneOS](https://gitlab.com/grapheneos/platform_external_vanadium)
+- [Mulch by DivestOS](https://gitlab.com/divested-mobile/mulch)
 - [Thorium by Alex313031](https://github.com/Alex313031/thorium)
 - [cUrl](https://github.com/curl/curl)
 - [cUrl binary](https://github.com/F3FFO/compile_zlib_openssl_curl_android)
-- [Zipsigner](https://github.com/Magisk-Modules-Repo/zipsigner) by [osm0sis](https://github.com/osm0sis)
+- [Zipsigner by osm0sis](https://github.com/Magisk-Modules-Repo/zipsigner)
+- [Cromite by uazo](https://github.com/uazo/cromite)
+- [AAPT2 binaries](https://github.com/skittles9823/QuickSwitch)
 
 ## License
 
@@ -69,13 +86,12 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
-# v2.4.0
+# v2.5.0
 
-- Welcome to Thorium webview
-- Mark as **experimental** Vanadium and Thorium
-- Add manual installation of Mulch webview
-- No need anymore to download thrichrome lib
-- Prevent to perform user installation of webview
+- Welcome to Cromite webview
+- Bye bye to Thorium webview
+- Add support for newest android version
+- Add support to Android 15 for Vanadium
 - Bug fix
 
 See older release notes: [CHANGELOG.md](CHANGELOG.md)
