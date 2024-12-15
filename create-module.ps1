@@ -10,63 +10,46 @@ function Compress {
         [string]$output,
         [string[]]$input
     )
-    Write-Host -Object "compressing $output..." -NoNewLine
-    & {
-        $null = 7z.exe a -t$type -r $output @input
-    } && Write-Host "`r|  compressed $output"
+    Write-Host "Compressing $output..."
+    & 7z.exe a -t$type -r $output $input | Out-Null
 }
 
-Write-Host -Object "deleting old files..."
-if (Test-Path -Path $MODULE_NAME) {
-    Remove-Item -Recurse -Force $MODULE_NAME
-    Write-Host "|  removed previous $MODULE_NAME"
+Write-Host "Deleting old files..."
+if (Test-Path $MODULE_NAME) {
+    Remove-Item -Force $MODULE_NAME
 }
-if (Test-Path -Path "$TOOLS_DIR\${TOOLS}.xz") {
-    Remove-Item -Recurse -Force "$TOOLS_DIR\${TOOLS}.xz"
-    Write-Host "|  removed previous $TOOLS.xz"
+if (Test-Path "$TOOLS_DIR\$($TOOLS).xz") {
+    Remove-Item -Force "$TOOLS_DIR\$($TOOLS).xz"
 }
-Write-Host -Object "ok!"
+Get-ChildItem -Path "$OVERLAY_DIR" -Filter "*.zip" | Remove-Item -Force
+Write-Host "Old files deleted!"
 
-Write-Host -Object "creating tools archive..."
+Write-Host "Zipping tools..."
 Set-Location -Path "$TOOLS_DIR/tools"
-
-Write-Host -Object "|  creating .tar archive" -NoNewLine
 Compress -type tar -output $TOOLS -input (Get-ChildItem -Name)
-
-Write-Host -Object "|  creating .xz archive" -NoNewLine
 Compress -type xz -output "${TOOLS}.xz" -input $TOOLS
-
-Remove-Item $TOOLS -Recurse -Force
-Write-Host "|  removed temp files"
+Remove-Item -Force $TOOLS
 Move-Item -Path "${TOOLS}.xz" -Destination "$TOOLS_DIR" -Force
-
 Set-Location -Path $ROOT_DIR
-Write-Host -Object "ok!"
+Write-Host "Tools zipped!"
 
-Write-Host -Object "Zipping overlays..."
+Write-Host "Zipping overlays..."
 Set-Location -Path $OVERLAY_DIR
-
-Get-ChildItem -Filter "*.zip" | Remove-Item -Force
-
 $overlays = @{
-    "cromite-overlay29.zip" = "./extracted/cromite-overlay29/*"
     "mulch-overlay28.zip" = "./extracted/mulch-overlay28/*"
     "mulch-overlay29.zip" = "./extracted/mulch-overlay29/*"
     "thorium-overlay29.zip" = "./extracted/thorium-overlay29/*"
     "vanadium-overlay29.zip" = "./extracted/vanadium-overlay29/*"
 }
-
 foreach ($zip_name in $overlays.Keys) {
     Compress -type zip -output $zip_name -input $overlays[$zip_name]
 }
-
 Set-Location -Path $ROOT_DIR
+Write-Host "Overlays zipped!"
 
-Write-Host -Object "creating module zip..."
-Write-Host -Object "|  creating zip archive" -NoNewLine
-& {
-    $null = 7z.exe a -tzip -r $MODULE_NAME * "-xr!.git*" "-xr!img" `
-      "-xr!common/tools/tools" "-xr!overlays/extracted" "-x!*.md" `
-      "-x!create-module.*"
-} && Write-Host "`r|  created zip archive"
-Write-Host -Object "done!"
+Write-Host "Creating module zip..."
+& 7z.exe a -tzip -r $MODULE_NAME * `
+    "-xr!.git*" "-xr!img" "-xr!common/tools/tools" `
+    "-xr!overlays/extracted" "-x!*.md" "-x!create-module.*" | Out-Null
+Write-Host "Module zip created!"
+Write-Host "Done!"

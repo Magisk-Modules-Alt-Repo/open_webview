@@ -19,6 +19,7 @@ compress() {
 echo "deleting old files..."
 rm -f "$MODULE_NAME"
 rm -f "$TOOLS_DIR/${TOOLS}.xz"
+rm -f "$OVERLAY_DIR/*.zip"
 
 echo "zipping tools..."
 cd "$TOOLS_DIR/tools"
@@ -30,10 +31,7 @@ cd "$ROOT_DIR"
 
 echo "Zipping overlays..."
 cd "$OVERLAY_DIR"
-rm -f *.zip
-
 declare -A overlays=(
-    ["cromite-overlay29.zip"]="./extracted/cromite-overlay29/*"
     ["mulch-overlay28.zip"]="./extracted/mulch-overlay28/*"
     ["mulch-overlay29.zip"]="./extracted/mulch-overlay29/*"
     ["thorium-overlay29.zip"]="./extracted/thorium-overlay29/*"
