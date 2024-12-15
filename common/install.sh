@@ -78,7 +78,7 @@ cromite() {
 	OVERLAY_ZIP_FILE=""
 }
 download_file() {
-	ui_print "  Downloading..."
+	ui_print "  Downloading $1..."
 	echo "[$(date "+%H:%M:%S")] Downloading file: $1 from source: $2" >>$LOG
 
 	curl -skLf "$2" -o "$TMPDIR"/$1
