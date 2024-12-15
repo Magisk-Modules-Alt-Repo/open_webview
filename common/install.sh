@@ -1,11 +1,12 @@
 #!/system/bin/sh
 SKIP_INSTALLATION=0
 ANDROID_VANADIUM_VERSION=13
-OVERLAY_API=28
+OVERLAY_API=29
 OVERLAY_APK_FILE="WebviewOverlay.apk"
 IS_REINSTALL=0
 CONFIG_FILE="$MODPATH"/.webview
 LOG="$MODPATH"/webview.log
+IS_MINIMAL_INSTALLATION=0
 
 get_version_github() {
 	local repo=$1
@@ -247,8 +248,8 @@ if [[ ! $BOOTMODE ]]; then
 	clean_up 1
 fi
 
-if [[ $API -ge 29 ]]; then
-	OVERLAY_API=29
+if [[ $API -lt 29 ]]; then
+	OVERLAY_API=28
 fi
 
 if [[ $API -eq 33 ]]; then
@@ -263,8 +264,10 @@ ui_print "  Choose between:"
 if [[ $IS64BIT ]]; then
 	if [[ $API -ge 29 ]] && [[ $API -lt 33 ]]; then
 		ui_print "    Mulch, Cromite"
-	elif [[ $API -ge 33 ]]
+	elif [[ $API -ge 33 ]]; then
 		ui_print "    Mulch, Vanadium, Cromite"
+	else
+		ui_print "    Mulch"
 	fi
 else
 	ui_print "    Mulch"
@@ -298,14 +301,13 @@ if [[ $IS64BIT ]]; then
 		fi
 	fi
 	if [[ $API -ge 29 ]] && [[ $SKIP_INSTALLATION -eq 1 ]]; then
-			SKIP_INSTALLATION=0
-			ui_print "  -> Cromite"
-			if chooseport 3; then
-				echo "[$(date "+%H:%M:%S")] Select cromite" >>$LOG
-				cromite
-			else
-				SKIP_INSTALLATION=1
-			fi
+		SKIP_INSTALLATION=0
+		ui_print "  -> Cromite"
+		if chooseport 3; then
+			echo "[$(date "+%H:%M:%S")] Select cromite" >>$LOG
+			cromite
+		else
+			SKIP_INSTALLATION=1
 		fi
 	fi
 fi
@@ -320,39 +322,37 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 	if [[ $VW_PACKAGE == "cromite" ]]; then
 		download_file webview.apk $VW_APK_URL
 		su -c pm install --install-location 1 webview.apk  >&2
-	else
-		if [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
-			ui_print ""
-			ui_print "  Do you want this module to download and install the latest Mulch webview as a system app?"
-			ui_print ""
-			ui_print "  [Vol+ = Yes, download and install]"
-			ui_print "  [Vol- = No, minimal setup for manual installation]"
-			if chooseport 5; then
-				ui_print "  CPU architecture: ${ARCH}"
-				download_install_webview
-			fi
-		else
+	elif [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
+		ui_print ""
+		ui_print "  Do you want this module to download and install the latest Mulch webview as a system app?"
+		ui_print ""
+		ui_print "  [Vol+ = Yes, download and install]"
+		ui_print "  [Vol- = No, minimal setup for manual installation]"
+		if ! chooseport 5; then
 			ui_print "  CPU architecture: ${ARCH}"
 			download_install_webview
 		fi
+	fi
 
-		create_overlay
-		if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
-			ui_print ""
-			ui_print "  !!! Overlay creation has failed !!!"
-			ui_print "  Compatibility is unlikely, please report this to your ROM developer."
-			ui_print "  Some ROMs need a patch to fix this."
-			ui_print "  Do NOT report this issue to me."
-			clean_up 1
-		fi
-		sign_framework_res
-		find_overlay_path
-		force_overlay
-		if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
-			echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
-			ui_print "  Missing overlay apk file"
-			clean_up 1
-		fi
+	if [[ $IS_MINIMAL_INSTALLATION -eq 0 ]]; then
+		ui_print "  CPU architecture: ${ARCH}"
+		download_install_webview
+	fi
+
+	create_overlay
+	if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
+		ui_print ""
+		ui_print "  !!! Overlay creation has failed !!!"
+		ui_print ""
+		clean_up 1
+	fi
+	sign_framework_res
+	find_overlay_path
+	force_overlay
+	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
+		echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
+		ui_print "  Missing overlay apk file"
+		clean_up 1
 	fi
 
 	create_config_file
