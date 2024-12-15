@@ -329,8 +329,7 @@ if [[ $SKIP_INSTALLATION -eq 0 ]]; then
 		ui_print "  [Vol+ = Yes, download and install]"
 		ui_print "  [Vol- = No, minimal setup for manual installation]"
 		if ! chooseport 5; then
-			ui_print "  CPU architecture: ${ARCH}"
-			download_install_webview
+			IS_MINIMAL_INSTALLATION=1
 		fi
 	fi
 
