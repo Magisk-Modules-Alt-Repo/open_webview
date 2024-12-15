@@ -312,52 +312,51 @@ if [[ $IS64BIT ]]; then
 	fi
 fi
 
-if [[ $SKIP_INSTALLATION -eq 0 ]]; then
-	if [[ -f $CONFIG_FILE ]]; then
-		echo "[$(date "+%H:%M:%S")] Remove old config file" >>$LOG
-		rm -rf $CONFIG_FILE
-		IS_REINSTALL=1
-	fi
-	
-	if [[ $VW_PACKAGE == "cromite" ]]; then
-		download_file webview.apk $VW_APK_URL
-		su -c pm install --install-location 1 webview.apk  >&2
-	elif [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
-		ui_print ""
-		ui_print "  Do you want this module to download and install the latest Mulch webview as a system app?"
-		ui_print ""
-		ui_print "  [Vol+ = Yes, download and install]"
-		ui_print "  [Vol- = No, minimal setup for manual installation]"
-		if ! chooseport 5; then
-			IS_MINIMAL_INSTALLATION=1
-		fi
-	fi
-
-	if [[ $IS_MINIMAL_INSTALLATION -eq 0 ]]; then
-		ui_print "  CPU architecture: ${ARCH}"
-		download_install_webview
-	fi
-
-	create_overlay
-	if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
-		ui_print ""
-		ui_print "  !!! Overlay creation has failed !!!"
-		ui_print ""
-		clean_up 1
-	fi
-	sign_framework_res
-	find_overlay_path
-	force_overlay
-	if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
-		echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
-		ui_print "  Missing overlay apk file"
-		clean_up 1
-	fi
-
-	create_config_file
-	clean_up 0
-else
+if [[ $SKIP_INSTALLATION -eq 1 ]]; then
 	echo "[$(date "+%H:%M:%S")] No webview selected" >>$LOG
-	ui_print "  No webview selected!"
-	clean_up 0
+	abort "No webview selected!"
 fi
+
+if [[ -f $CONFIG_FILE ]]; then
+	echo "[$(date "+%H:%M:%S")] Remove old config file" >>$LOG
+	rm -rf $CONFIG_FILE
+	IS_REINSTALL=1
+fi
+
+if [[ $VW_PACKAGE == "cromite" ]]; then
+	download_file webview.apk $VW_APK_URL
+	su -c pm install --install-location 1 webview.apk  >&2
+elif [[ $VW_PACKAGE == "us.spotco.mulch_wv" ]]; then
+	ui_print ""
+	ui_print "  Do you want this module to download and install the latest Mulch webview as a system app?"
+	ui_print ""
+	ui_print "  [Vol+ = Yes, download and install]"
+	ui_print "  [Vol- = No, minimal setup for manual installation]"
+	if ! chooseport 5; then
+		IS_MINIMAL_INSTALLATION=1
+	fi
+fi
+
+if [[ $IS_MINIMAL_INSTALLATION -eq 0 ]]; then
+	ui_print "  CPU architecture: ${ARCH}"
+	download_install_webview
+fi
+
+create_overlay
+if [[ ! -f "$MODPATH"/unsigned.apk ]]; then
+	ui_print ""
+	ui_print "  !!! Overlay creation has failed !!!"
+	ui_print ""
+	clean_up 1
+fi
+sign_framework_res
+find_overlay_path
+force_overlay
+if [[ ! -f "$MODPATH"/$OVERLAY_PATH$OVERLAY_APK_FILE ]]; then
+	echo "[$(date "+%H:%M:%S")] Overlay file missing in path: $OVERLAY_PATH" >>$LOG
+	ui_print "  Missing overlay apk file"
+	clean_up 1
+fi
+
+create_config_file
+clean_up 0
