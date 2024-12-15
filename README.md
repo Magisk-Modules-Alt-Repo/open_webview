@@ -40,10 +40,10 @@ Alternatively, you can contribute directly to the project. All support is apprec
 
 - Works on any device running Android 8.0+ and Magisk 20.4+
 - Replace the webview with one of:
-    1. ~~[Bromite](https://github.com/bromite/bromite)~~ [Deprecated]
+    1. ~~[Bromite](https://github.com/bromite/bromite)~~ (Deprecated)
     2. [Mulch](https://gitlab.com/divested-mobile/mulch)
     3. [Vanadium](https://gitlab.com/grapheneos/platform_external_vanadium)
-    4. ~~[Thorium](https://github.com/Alex313031/Thorium-Android)~~ [Deprecated]
+    4. ~~[Thorium](https://github.com/Alex313031/Thorium-Android)~~ (Deprecated)
     5. [Cromite](https://github.com/uazo/cromite)
 
 ### Why did I deprecate webview?
@@ -67,6 +67,7 @@ In my opinion a webview is a very important part of the system and I don't want 
 
 ## Credits
 
+- [Magisk by topjohnwu](https://github.com/topjohnwu/Magisk)
 - [MMT-Extended by Zackptg5](https://github.com/Zackptg5/MMT-Extended)
 - [Bromite](https://github.com/bromite/bromite)
 - [Vanadium by GrapheneOS](https://gitlab.com/grapheneos/platform_external_vanadium)
