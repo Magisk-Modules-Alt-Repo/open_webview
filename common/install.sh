@@ -59,15 +59,6 @@ vanadium() {
 	VW_OVERLAY_PACKAGE="app.vanadium.WebviewOverlay"
 	OVERLAY_ZIP_FILE="vanadium-overlay${OVERLAY_API}.zip"
 }
-thorium() {
-	VW_APK_URL=https://github.com/Alex313031/Thorium-Android/releases/download/$(get_version_github "Alex313031/Thorium-Android" "SystemWebView_${ARCH}.apk")/SystemWebView_${ARCH}.apk
-	VW_TRICHROME_APK_URL=""
-	VW_SHA=""
-	VW_SYSTEM_PATH=$(get_system_path_according_to_rom)/ThoriumWebview
-	VW_PACKAGE="com.thorium.webview"
-	VW_OVERLAY_PACKAGE="com.thorium.WebviewOverlay"
-	OVERLAY_ZIP_FILE="thorium-overlay${OVERLAY_API}.zip"
-}
 cromite() {
 	VW_APK_URL=https://github.com/uazo/cromite/releases/download/$(get_version_github "uazo/cromite" "${ARCH}_SystemWebView64.apk")/${ARCH}_SystemWebView64.apk
 	VW_TRICHROME_APK_URL=""
@@ -268,16 +259,12 @@ elif [[ $API -eq 35 ]]; then
 	ANDROID_VANADIUM_VERSION=15
 fi
 
-ui_print ""
-ui_print "  !!! ATTENTION !!!"
-ui_print "  Vanadium and Thorium installation are experimentals, so they may have problems."
-ui_print ""
 ui_print "  Choose between:"
-if [[ $API -ge 29 ]]; then
-	if [[ $IS64BIT ]]; then
-		ui_print "    Mulch, Vanadium, Thorium, Cromite"
-	else
-		ui_print "    Mulch, Thorium"
+if [[ $IS64BIT ]]; then
+	if [[ $API -ge 29 ]] && [[ $API -lt 33 ]]; then
+		ui_print "    Mulch, Cromite"
+	elif [[ $API -ge 33 ]]
+		ui_print "    Mulch, Vanadium, Cromite"
 	fi
 else
 	ui_print "    Mulch"
@@ -294,8 +281,8 @@ else
 	SKIP_INSTALLATION=1
 fi
 
-if [[ $API -ge 33 ]]; then
-	if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]]; then
+if [[ $IS64BIT ]]; then
+	if [[ $API -ge 33 ]] && [[ $SKIP_INSTALLATION -eq 1 ]]; then
 		SKIP_INSTALLATION=0
 		ui_print "  -> Vanadium"
 		if chooseport 3; then
@@ -310,27 +297,15 @@ if [[ $API -ge 33 ]]; then
 			SKIP_INSTALLATION=1
 		fi
 	fi
-fi
-if [[ $API -ge 29 ]]; then
-	if [[ $SKIP_INSTALLATION -eq 1 ]]; then
-		SKIP_INSTALLATION=0
-		ui_print "  -> Thorium"
-		if chooseport 3; then
-			echo "[$(date "+%H:%M:%S")] Select thorium" >>$LOG
-			thorium
-		else
-			SKIP_INSTALLATION=1
-		fi
-	fi
-
-	if [[ $SKIP_INSTALLATION -eq 1 ]] && [[ $IS64BIT ]]; then
-		SKIP_INSTALLATION=0
-		ui_print "  -> Cromite"
-		if chooseport 3; then
-			echo "[$(date "+%H:%M:%S")] Select cromite" >>$LOG
-			cromite
-		else
-			SKIP_INSTALLATION=1
+	if [[ $API -ge 29 ]] && [[ $SKIP_INSTALLATION -eq 1 ]]; then
+			SKIP_INSTALLATION=0
+			ui_print "  -> Cromite"
+			if chooseport 3; then
+				echo "[$(date "+%H:%M:%S")] Select cromite" >>$LOG
+				cromite
+			else
+				SKIP_INSTALLATION=1
+			fi
 		fi
 	fi
 fi
