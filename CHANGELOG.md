@@ -1,6 +1,10 @@
 **If you find this project useful, please consider [supporting](https://www.paypal.me/f3ff0) the developer's mental health :)**
 **Alternatively, you can contribute directly to the project. All support is appreciated!**
 
+# v2.5.2
+
+- Prevent post-fs logic if Cromite is choosen as webview
+
 # v2.5.1
 
 - Bug fix
