@@ -231,7 +231,7 @@ clean_up() {
 	echo "[$(date "+%H:%M:%S")] Installation success" >>$LOG
 }
 
-echo "# open-webview v2.5.1" > $LOG
+echo "# open-webview v2.5.2" > $LOG
 echo -e "# Author: @f3ffo (Github)\n" >>$LOG
 echo "[$(date "+%H:%M:%S")] Brand: $(getprop ro.product.system.brand)" >>$LOG
 echo "[$(date "+%H:%M:%S")] Device: $(getprop ro.product.system.device)" >>$LOG
