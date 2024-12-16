@@ -28,18 +28,20 @@ backup_original_files() {
 }
 
 if [[ $RESET -eq 1 ]]; then
-	if [[ $IS_REINSTALL -eq 1 ]]; then
-		restore_original_files
-	else
-		backup_original_files
+	if [[ -n $VW_OVERLAY_PACKAGE ]]; then
+		if [[ $IS_REINSTALL -eq 1 ]]; then
+			restore_original_files
+		else
+			backup_original_files
+		fi
+		# clear cache
+		rm -rf /data/resource-cache/* /data/dalvik-cache/* /cache/dalvik-cache/* /data/system/package_cache/*
+		# remove conflict
+		sed -i "/com*webview/d" /data/system/packages.list
+		sed -i "/com*webview/d" /data/system/packages.xml
+		# register overlay
+		sed -i "/item packageName=\"${VW_OVERLAY_PACKAGE}\"/d" $OVERLAY_LIST
+		sed -i "s|</overlays>|    <item packageName=\"${VW_OVERLAY_PACKAGE}\" userId=\"0\" targetPackageName=\"android\" baseCodePath=\"${OVERLAY_PATH}/${OVERLAY_APK_FILE}\" state=\"${STATE}\" isEnabled=\"true\" isStatic=\"true\" priority=\"9999\" /></overlays>|" $OVERLAY_LIST
 	fi
-	# clear cache
-	rm -rf /data/resource-cache/* /data/dalvik-cache/* /cache/dalvik-cache/* /data/system/package_cache/*
-	# remove conflict
-	sed -i "/com*webview/d" /data/system/packages.list
-	sed -i "/com*webview/d" /data/system/packages.xml
-	# register overlay
-	sed -i "/item packageName=\"${VW_OVERLAY_PACKAGE}\"/d" $OVERLAY_LIST
-	sed -i "s|</overlays>|    <item packageName=\"${VW_OVERLAY_PACKAGE}\" userId=\"0\" targetPackageName=\"android\" baseCodePath=\"${OVERLAY_PATH}/${OVERLAY_APK_FILE}\" state=\"${STATE}\" isEnabled=\"true\" isStatic=\"true\" priority=\"9999\" /></overlays>|" $OVERLAY_LIST
 	sed -i "s/RESET=1/RESET=0/" $CONFIG_FILE
 fi
