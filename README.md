@@ -87,12 +87,8 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
-# v2.5.0
+# v2.5.1 (see 2.5.0 changelog for more)
 
-- Welcome to Cromite webview
-- Bye bye to Thorium webview
-- Add support for newest android version
-- Add support to Android 15 for Vanadium
 - Bug fix
 
 See older release notes: [CHANGELOG.md](CHANGELOG.md)
