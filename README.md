@@ -78,6 +78,7 @@ In my opinion a webview is a very important part of the system and I don't want 
 - [Zipsigner by osm0sis](https://github.com/Magisk-Modules-Repo/zipsigner)
 - [Cromite by uazo](https://github.com/uazo/cromite)
 - [AAPT2 binaries](https://github.com/skittles9823/QuickSwitch)
+- [WebViewChanger](https://github.com/Lordify95/WebViewChanger)
 
 ## License
 
