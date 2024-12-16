@@ -87,8 +87,8 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
-# v2.5.1 (see 2.5.0 changelog for more)
+# v2.5.2 (see 2.5.0 changelog for more)
 
-- Bug fix
+- Prevent post-fs logic if Cromite is choosen as webview
 
 See older release notes: [CHANGELOG.md](CHANGELOG.md)
