@@ -19,7 +19,7 @@ This module helps you to replace your system webview though Magisk.
 
 - S.O.
     - minimum: Android 8+
-    - suggested: Android 13+
+    - recommended: Android 13+
 - Magisk 20.4+
 - KernelSU 0.6+
 
