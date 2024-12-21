@@ -163,12 +163,7 @@ create_overlay() {
 	echo "[$(date "+%H:%M:%S")] Create overlay" >>$LOG
 	ui_print "  Creating overlay..."
 	unzip -qo "$MODPATH"/overlays/$OVERLAY_ZIP_FILE -d "$MODPATH"/overlays/overlay >&2
-	MODTMPDIR="$(mktemp -d)"
-	if [ -n "$MODTMPDIR" ] && [ -d "$MODTMPDIR" ]; then
-		aapt2 compile -v --dir "$MODPATH"/overlays/overlay/res -o "$MODTMPDIR" && \
-			aapt2 link -o "$MODPATH"/unsigned.apk -I /system/framework/framework-res.apk --manifest "$MODPATH"/overlays/overlay/AndroidManifest.xml "$MODTMPDIR"/* >&2
-		rm -rf "$MODTMPDIR"
-	fi
+	aapt p -fvM "$MODPATH"/overlays/overlay/AndroidManifest.xml -I /system/framework/framework-res.apk -S "$MODPATH"/overlays/overlay/res -F "$MODPATH"/unsigned.apk >&2
 }
 sign_framework_res() {
 	echo "[$(date "+%H:%M:%S")] Sign modified framework-res" >>$LOG
