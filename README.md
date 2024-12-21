@@ -17,15 +17,15 @@ This module helps you to replace your system webview though Magisk.
 
 ## Compatibility
 
-- Android 8+
+- S.O.
+    - minimum: Android 8+
+    - suggested: Android 13+
 - Magisk 20.4+
 - KernelSU 0.6+
 
-## Tested Device
+## Tested Device ROM
 
-- [LOS 19](https://lineageos.org/)
-- [LOS 20](https://lineageos.org/)
-- [LOS 21](https://lineageos.org/)
+- [LOS 19, LOS 20, LOS 21](https://lineageos.org/)
 - [crDroid 10.x](https://crdroid.net/)
 - And more...
 
