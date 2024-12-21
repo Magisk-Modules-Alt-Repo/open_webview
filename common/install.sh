@@ -231,6 +231,12 @@ clean_up() {
 	echo "[$(date "+%H:%M:%S")] Installation success" >>$LOG
 }
 
+if [[ $API -lt 26 ]]; then
+	ui_print "  Your android version is not supported"
+	ui_print "  Minimum android version supported: 8"
+	clean_up 1
+fi
+
 echo "# open-webview v2.5.2" > $LOG
 echo -e "# Author: @f3ffo (Github)\n" >>$LOG
 echo "[$(date "+%H:%M:%S")] Brand: $(getprop ro.product.system.brand)" >>$LOG
