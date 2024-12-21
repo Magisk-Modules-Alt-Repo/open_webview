@@ -248,7 +248,7 @@ echo "[$(date "+%H:%M:%S")] System name: $(getprop ro.product.system.name)" >>$L
 echo -e "[$(date "+%H:%M:%S")] Android Version: $(getprop ro.system.build.version.release)\n" >>$LOG
 
 if [[ ! $BOOTMODE ]]; then
-	echo "[$(date "+%H:%M:%S")] Install through recovery" >>$LOG
+	echo "[$(date "+%H:%M:%S")] Install through recovery NOT supported!" >>$LOG
 	ui_print "  Installing through recovery NOT supported!"
 	ui_print "  Install this module via Magisk Manager"
 	clean_up 1
