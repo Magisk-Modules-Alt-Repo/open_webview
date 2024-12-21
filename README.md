@@ -17,17 +17,49 @@ This module helps you to replace your system webview though Magisk.
 
 ## Compatibility
 
-- S.O.
+- S.O.:
     - minimum: Android 8+
     - recommended: Android 13+
 - Magisk 20.4+
 - KernelSU 0.6+
 
+> Thanks to @amteza the module works fine with KernelSU but I personally use Magisk so I can't guarantee correct functioning with KernelSU
+
 ## Tested Device ROM
 
-- [LOS 19, LOS 20, LOS 21](https://lineageos.org/)
-- [crDroid 10.x](https://crdroid.net/)
-- And more...
+| API | OS | ROM | version |
+|:---:|:--:|:---:|:-------:|
+| `26` | `Android 8` |      | `AAPT` |
+| `27` | `Android 8.1` |       | `AAPT` |
+| `28` | `Android 9` |       | `AAPT` |
+| `29` | `Android 10` |       | `AAPT` |
+| `30` | `Android 11` |       | `AAPT` |
+| `31` | `Android 12` | `LOS 19` | `AAPT` |
+| `32` | `Android 12L` | `LOS 19.1` | `AAPT` |
+| `33` | `Android 13` | `LOS 20` | `AAPT` |
+| `34*` | `Android 14` | `crDroid 10.x`, `LOS 21` | `AAPT2` |
+| `35` | `Android 15` |       | `AAPT2` |
+
+\* before the security patch update of june 2024 you can still use the AAPT version but if you have a newer version you need to use the AAPT2 version
+
+
+You can easily add more ROM to this table opening a new issue with some basics info:
+- device
+- Android version
+- custom rom
+- rooting method
+- module version
+- AAPT or AAPT2
+
+```
+Es.
+- POCO F2 PRO
+- Android 14
+- LOS 21
+- Magisk 28.1
+- 2.5.0
+- AAPT2
+```
 
 ## Support
 
@@ -55,7 +87,7 @@ In general because I no longer consider it adequate to my standard:
 
 In my opinion a webview is a very important part of the system and I don't want to make the system vulnerable with an outdate webview
 
-- **Bromite** -> last update in 12/2022 (**Bromite**'s successor is **Cromite**)
+- **Bromite** -> last update in **12/2022** (**Bromite**'s successor is **Cromite**)
 - **Thorium** -> I don't like the update policy, too long between two update
 
 ## Create module
@@ -88,7 +120,7 @@ The source code is available under [GPL-3.0](https://github.com/Magisk-Modules-A
 
 ## Change logs
 
-# v2.5.2 (see 2.5.0 changelog for more)
+### v2.5.2 (see 2.5.0 changelog for more)
 
 - Prevent post-fs logic if Cromite is choosen as webview
 
